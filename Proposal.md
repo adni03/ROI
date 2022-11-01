@@ -26,8 +26,8 @@ The College Scorecard dataset includes historical metrics dating back to 1996, r
 
 We acknowledge that the preliminary questions above are broad in scope. That said, we are likely to encounter more granular questions that further enhance the ultimate goal we are trying to achieve with this dataset: the evaluation of a student-university “best fit”. 
 
-References:
-[1] 	The NCES Fast Facts Tool provides quick answers to many education questions (National Center for Education Statistics). National Center for Education Statistics (NCES) Home Page, a part of the U.S. Department of Education. (n.d.). Retrieved November 1, 2022, from https://nces.ed.gov/fastfacts/display.asp?id=51 
+**References:**\
+[1] 	The NCES Fast Facts Tool provides quick answers to many education questions (National Center for Education Statistics). National Center for Education Statistics (NCES) Home Page, a part of the U.S. Department of Education. (n.d.). Retrieved November 1, 2022, from https://nces.ed.gov/fastfacts/display.asp?id=51 \
 
 [2] 	Data Home: College Scorecard. Data Home | College Scorecard. (n.d.). Retrieved November 1, 2022, from https://collegescorecard.ed.gov/data/ 
 
