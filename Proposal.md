@@ -1,8 +1,8 @@
 # Final Project Proposal
 
-**GitHub Repo URL**: 
+**GitHub Repo URL**: https://github.com/CMU-IDS-Fall-2022/final-project-roi
 
-Team: https://github.com/CMU-IDS-Fall-2022/final-project-roi
+Team: 
 - Aditya Nittala (snittala)
 - Anjana Bytha (abytha)
 - Brittany Redmond (bredmond)
