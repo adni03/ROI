@@ -1,7 +1,7 @@
 import data_modules.data_processor as data_processor
 
-df = data_processor.loadSkinnyCSV() #17s
 df = data_processor.loadCSV(2000) #17.2s
+df = data_processor.loadSkinnyCSV() #0.5s
 
 dfList = []
 for year in range(1996,2020):
