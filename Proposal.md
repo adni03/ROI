@@ -50,11 +50,11 @@ The data is messy, with a lot of null values.
 
 The first step in narrowing down the features list was to find columns that had "enough" data across the years. We set the threshold as columns having 20% null values. For each of the years, a list was compiled and then intersected with other such lists.
 
-![Columsn with acceptable number of nulls]()
+![Columns with acceptable number of nulls](./pics/threshold.png)
 
-![Building the columns list]()
+![Building the columns list](./pics/build_col_list.png)
 
-![Intersection to find common columns]()
+![Intersection to find common columns](./pics/intersection.png)
 
 This gave a list of 333 features. We further narrowed down to 45 features by comparing the features to a manually compiled list. Some of the universities did not have location data (latitude, longitude). We used another source to append these values to our dataset.
 
