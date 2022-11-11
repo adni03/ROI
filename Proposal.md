@@ -46,21 +46,27 @@ The College Scorecard dataset contains data about universities from 1996 to 2021
 
 The data is messy, with a lot of null values. 
 
-![Nulls in the data]()
+![Nulls in the data](./pics/messy.png)
 
 The first step in narrowing down the features list was to find columns that had "enough" data across the years. We set the threshold as columns having 20% null values. For each of the years, a list was compiled and then intersected with other such lists.
 
 ![Columns with acceptable number of nulls](./pics/threshold.png)
 
+The code in the above image generates a list of columns that have acceptable number of nulls in each column for one file.
+
 ![Building the columns list](./pics/build_col_list.png)
 
+The above code reads all the files, and calls the thresholding function to get a list of columns.
+
 ![Intersection to find common columns](./pics/intersection.png)
+
+This code performs an intersection of the list of acceptable columns obtained from all the files.
 
 This gave a list of 333 features. We further narrowed down to 45 features by comparing the features to a manually compiled list. Some of the universities did not have location data (latitude, longitude). We used another source to append these values to our dataset.
 
 The dataset now looks like:
 
-![Semi-clean dataset]()
+![Semi-clean dataset](./pics/semi_clean.png)
 
 ## Interactivity
 We designed Version 1 of our UI/UX using Miro. The link to access it can be found here:
