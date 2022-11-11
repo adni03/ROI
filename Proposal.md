@@ -32,5 +32,47 @@ We acknowledge that the preliminary questions above are broad in scope. That sai
 [2] 	Data Home: College Scorecard. Data Home | College Scorecard. (n.d.). Retrieved November 1, 2022, from https://collegescorecard.ed.gov/data/ 
 
 
+## Data Processing
+{INSERT FINDINGS}
 
+## Interactivity
+We designed Version 1 of our UI/UX using Miro. The link to access it can be found here:
+https://miro.com/app/board/uXjVPFVsL0Q=/?share_link_id=804071138934
 
+In this design, we start with allowing the student to enter some information about themself, including name, field of study, and SAT scores. 
+
+![menu pic](./pics/menu.png)
+
+**Matchmaker:** 
+
+Once all inputs are satisfied, the student starts the matchmaker by clicking the "Find a Match" button. They are then presented a summary of the top 10 universities in order of acceptance probability.
+
+###### Acceptance probability is based on the likelihood the university will accept the student in next year's class
+
+![matchmaker](./pics/matchmaker.png)
+
+We show a bar chart that makes it easy to compare proabilities across universities. We also show a map of the universities for regional preference purposes.
+
+**University Comparisons:**
+
+We then allow the user to compare Universities by clicking multiple bars or multiple map blips. This then populates a new section of visualization that is meant to illustrate the difference in various metrics at the selected universities. 
+The user can decide which metric they would like to visualize, but the default is ROI. We include the ability to click on the university which then opens a scatter plot view of a 25 year trend for the selected university's metric that is currently plotted in the bar chart.
+
+###### ROI is a an output of our ROI predictive model that forecasts a student's ROI given both their own and the university's characteristics. 
+
+![university comparison](./pics/compare.png)
+
+**University Info:**
+
+Clicking the university's bar on the bar chart also expands a section that presents specifics about that University. This includes:
+  1. About the University
+
+  1. Various visualizations such as Pie charts, scatter charts, etc. that highlight important university metrics like gender ratios, scholarship trends, etc.
+
+![university info](./pics/info.png)
+
+**ROI Explanation**
+
+Finally, we present a section that details the ROI model's features so that the user better understands what characteristics carry the most weight toward achieving a successful career that returns a better ROI. We utilize several visuals for this, one of which is a waterfall plot representing SHAP values for our features:
+
+![roi analysis](./pics/roi_analysis.png)
