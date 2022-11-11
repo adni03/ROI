@@ -69,7 +69,8 @@ Clicking the university's bar on the bar chart also expands a section that prese
 
   1. Various visualizations such as Pie charts, scatter charts, etc. that highlight important university metrics like gender ratios, scholarship trends, etc.
 
-![university info](./pics/info.PNG)
+![university info](./pics/info1.PNG)
+![university info](./pics/info2.PNG)
 
 **ROI Explanation**
 
