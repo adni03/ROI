@@ -41,7 +41,7 @@ https://miro.com/app/board/uXjVPFVsL0Q=/?share_link_id=804071138934
 
 In this design, we start with allowing the student to enter some information about themself, including name, field of study, and SAT scores. 
 
-![menu pic](./pics/menu.png)
+![menu pic](./pics/menu.PNG)
 
 **Matchmaker:** 
 
@@ -49,7 +49,7 @@ Once all inputs are satisfied, the student starts the matchmaker by clicking the
 
 ###### Acceptance probability is based on the likelihood the university will accept the student in next year's class
 
-![matchmaker](./pics/matchmaker.png)
+![matchmaker](./pics/matchmaker.PNG)
 
 We show a bar chart that makes it easy to compare proabilities across universities. We also show a map of the universities for regional preference purposes.
 
@@ -60,7 +60,7 @@ The user can decide which metric they would like to visualize, but the default i
 
 ###### ROI is a an output of our ROI predictive model that forecasts a student's ROI given both their own and the university's characteristics. 
 
-![university comparison](./pics/compare.png)
+![university comparison](./pics/compare.PNG)
 
 **University Info:**
 
@@ -69,10 +69,10 @@ Clicking the university's bar on the bar chart also expands a section that prese
 
   1. Various visualizations such as Pie charts, scatter charts, etc. that highlight important university metrics like gender ratios, scholarship trends, etc.
 
-![university info](./pics/info.png)
+![university info](./pics/info.PNG)
 
 **ROI Explanation**
 
 Finally, we present a section that details the ROI model's features so that the user better understands what characteristics carry the most weight toward achieving a successful career that returns a better ROI. We utilize several visuals for this, one of which is a waterfall plot representing SHAP values for our features:
 
-![roi analysis](./pics/roi_analysis.png)
+![roi analysis](./pics/roi_analysis.PNG)
