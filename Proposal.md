@@ -33,7 +33,34 @@ We acknowledge that the preliminary questions above are broad in scope. That sai
 
 
 ## Data Processing
-{INSERT FINDINGS}
+The College Scorecard dataset contains data about universities from 1996 to 2021. There are about 3000 features in the dataset, which are broadly categorized into:
+- School: Information about the school like location, programs offered, faculty, etc.
+- Student: Information about average age, family income, etc.
+- Cost: cost of attending, living expenses, cost according to family income, etc.
+- Aid: debt, percent Pell Grant recipients, loan balances, etc.
+- Earnings: earnings after 1, 3, 8, 6, 10 yrs, income by gender, race, etc.
+- Repayment: 1,3,5 yr repayment rates by family income, percentage of defaulters by program, etc.
+- Admissions: SAT scores, ACT scores, etc.
+- Academics: percent degree awarded in various fields, avg time required to complete programs, etc.
+- Completion: Completion rate according to family income bracket, male, female, etc.
+
+The data is messy, with a lot of null values. 
+
+![Nulls in the data]()
+
+The first step in narrowing down the features list was to find columns that had "enough" data across the years. We set the threshold as columns having 20% null values. For each of the years, a list was compiled and then intersected with other such lists.
+
+![Columsn with acceptable number of nulls]()
+
+![Building the columns list]()
+
+![Intersection to find common columns]()
+
+This gave a list of 333 features. We further narrowed down to 45 features by comparing the features to a manually compiled list. Some of the universities did not have location data (latitude, longitude). We used another source to append these values to our dataset.
+
+The dataset now looks like:
+
+![Semi-clean dataset]()
 
 ## Interactivity
 We designed Version 1 of our UI/UX using Miro. The link to access it can be found here:
