@@ -9,7 +9,7 @@ import numpy as np
 class DataPreprocessor:
     def __init__(self, null_threshold):
         self.interesting_columns = []
-        with open('../data/columns.txt', 'r') as r:
+        with open('data/columns.txt', 'r') as r:
             for column in r:
                 self.interesting_columns.append(column)
 
