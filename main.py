@@ -12,6 +12,12 @@
 #         print("error processing data for year " + str(year))
 
 import data_modules.data_preprocessor as DP
+import models.recommender as CollegeRecommender
 
 dp = DP.DataPreprocessor(0.2)
-df = dp.preprocess_data()
+df = dp.load_csv('data/college_data_working.csv')
+print(df.head())
+
+rec = CollegeRecommender.Recommender(region=['Far West'], sat_score=1600,
+                  act_score=36, funding_type=['Private', 'Public'])
+rec.predict(df)
