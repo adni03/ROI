@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
+import matplotlib.pyplot as plt
 
 df_raw = pd.read_csv("../data/college_data_working.csv")
 df_raw.head()
@@ -12,6 +13,11 @@ scorecard_working = df_raw.copy()
 scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["MedianDebt"]/scorecard_working["MedianEarnings"])
 featureList = ["Geography","AdmissionRate","ACTMedian","SATAverage","AverageCost","Expenditure","AverageFacultySalary","AverageAgeofEntry","ROI"]
 scorecard_working = scorecard_working[featureList]
+
+# Correlation Matrix
+correlation_matrix = scorecard_working.corr()
+correlation_matrix.to_csv("../data/correlation_matrix.csv")
+# Should we consider some of the features correlated to median earnings?
 
 # Feature Cleaning 
 ## dummify geography
@@ -39,3 +45,4 @@ x_train_lm = sm.add_constant(x_train)
 y_train_lm = y_train.values.reshape(-1,1)
 lm = sm.OLS(y_train_lm, x_train_lm).fit()
 lm.summary()
+
