@@ -1,16 +1,8 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.pipeline import Pipeline
-import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
-
-# def __init__(self, region, sat_score,
-#                  act_score, funding_type,
-#                  min_tuition=0, max_tuition=100000):
-#     return
 
 df_raw = pd.read_csv("../data/college_data_working.csv")
 df_raw.head()
