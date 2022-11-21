@@ -59,6 +59,13 @@ class Recommender:
 
         return kmeans
 
+    def __getScores(self, dist):
+        invDist = 1/dist
+        sumAll = np.sum(invDist)
+        scores = invDist/sumAll
+        scores = scores * 100
+        return scores
+
     def predict(self, df):
         subset = self.filter_data(df)
         kmeans = self.__train(subset)
@@ -78,4 +85,10 @@ class Recommender:
                                      np.squeeze(user_scores).copy()
                                  )), axis=1
                                  )
-        print(f'Distances: {np.sort(distances)[:10]}')
+
+        sorted_dis = np.sort(distances)[:10]
+        indices = np.argsort(sorted_dis)
+        university_recs = university_cluster.loc[indices]
+        university_recs['DISTANCES'] = sorted_dis
+        university_recs['SCORE'] = self.__getScores(university_recs['DISTANCES'])
+        return university_recs
