@@ -99,4 +99,4 @@ plt.show()
 
 # Heteroscedasticity in larger ROI predictions (error non-normal)
 
-# TODO: Convert ACT to SAT before feature scaling, prune insignificant vars prior to prediction
+# TODO: Convert ACT to SAT before feature scaling, prune insignificant vars prior to prediction, revert back to debt and add medianfamilyincome
