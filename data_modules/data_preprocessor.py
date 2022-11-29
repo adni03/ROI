@@ -9,13 +9,13 @@ import numpy as np
 class DataPreprocessor:
     def __init__(self, null_threshold):
         self.interesting_columns = []
-        with open('data/columns.txt', 'r') as r:
+        with open('../data/columns.txt', 'r') as r:
             for column in r:
-                self.interesting_columns.append(column)
+                self.interesting_columns.append(column.strip())
 
-        self.OGFILE = 'data/MERGED2019.csv'
-        self.CLEANFILE = 'data/downloaded_clean_2019.csv'
-        self.ZIPFILE = 'data/zip_to_lat_lon.csv'
+        self.OGFILE = '../data/MERGED2019.csv'
+        self.CLEANFILE = '../data/downloaded_clean_2019.csv'
+        self.ZIPFILE = '../data/zip_to_lat_lon.csv'
         self.YEAR = 2019
         self.threshold = null_threshold
 
@@ -53,6 +53,7 @@ class DataPreprocessor:
         zip_df['ZIP'] = zip_df['ZIP'].astype(str).str.zfill(5)
 
         df_enough_data = self.__build_col_list()
+        df_enough_data = df_enough_data[self.interesting_columns].copy()
         joined_df = pd.merge(df_enough_data, clean_df, on='INSTNM', how='inner')
 
         def shorted_zips(zip):
@@ -62,7 +63,7 @@ class DataPreprocessor:
         joined_df = pd.merge(joined_df, zip_df, on='ZIP', how='inner')
 
         if write_flag:
-            joined_df.to_csv('data/college_data_working.csv')
+            joined_df.to_csv('../data/college_data_working.csv')
 
         return joined_df
 
