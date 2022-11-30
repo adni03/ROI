@@ -12,6 +12,7 @@ class DataPreprocessor:
         with open('../data/columns.txt', 'r') as r:
             for column in r:
                 self.interesting_columns.append(column.strip())
+        self.interesting_columns.extend([f'PCIP0{str(i)}' for i in range(1, 10) if i not in [2, 6, 7, 8]])
         for i in range(10, 55):
             if i not in [17, 18, 20, 21, 28, 32, 33, 34, 35, 36, 37, 53]:
                 self.interesting_columns.append(f'PCIP{str(i)}')
