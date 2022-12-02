@@ -10,6 +10,13 @@ def load_data():
     df = pd.read_csv('data/college_data_working.csv')
     return df
 
+st.set_page_config(layout='wide', page_title='University MatchMaker')
+
+add_selectbox = st.sidebar.selectbox('Select a view to explore:',
+                                     ('University Recommender',
+                                      'Explore Universities',
+                                      'University ROI'))
+
 # Method to transform data frame for degree bar chart
 def get_degree_df(df, *filter):
     # include columns we're interested in
@@ -75,187 +82,194 @@ def get_gender_df(df, *filter):
     gender_df = pd.melt(gender_df, id_vars=['INSTNM'])
     return gender_df
 
+
 ## Part 1: Code for recommender output display. This includes Sliders which take user input
 ## After providing input and clicking the button, a map of the recommended schools will be
 ## displayed, along with interactive bar charts for top 10 schools (recommended by similarity score)
 ## and for the top degrees by proportion of students in those schools.
 
-st.set_page_config(layout="wide")
-st.title("University MatchMaker")
+if add_selectbox == 'University Recommender':
+    with st.spinner(text="Loading data..."):
+        df = load_data()
+        st.text('Find the right college for you!')
 
-with st.spinner(text="Loading data..."):
-    df = load_data()
-    st.text('Find the right college for you!')
+        # widget layout/setup
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            sat_score_val = int(st.text_input('SAT Score', '1400'))
+        with col2:
+            act_score_val = int(st.text_input('ACT Score', '32'))
+        with col3:
+            funding_options = ['Private', 'Public']
+            funding_sel = st.multiselect('Funding Model', funding_options)
 
-    # widget layout/setup
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        sat_score_val = int(st.text_input('SAT Score', '1400'))
-    with col2:
-        act_score_val = int(st.text_input('ACT Score', '32'))
-    with col3:
-        funding_options = ['Private', 'Public']
-        funding_sel = st.multiselect('Funding Model', funding_options)
+        region_options = df['Region'].unique()
+        region_sel = st.multiselect('Select region', region_options)
 
-    region_options = df['Region'].unique()
-    region_sel = st.multiselect('Select region', region_options)
+        values = st.slider(
+            'Select a range for tuition',
+            2000, 100000, (5000, 55000))
 
-    values = st.slider(
-        'Select a range for tuition',
-        2000, 100000, (5000, 55000))
+        # When clicked...
+        if st.button('Find a Match!'):
+            # Get recommendations (right now trained on act_score adn sat_score on filtered dataset,
+            # but working to train on all user input w/ dim reduction so that we can consistently
+            # output the top 10 - some of the filters reduce training set drastically s.t. there are
+            # only 4 schools total being trained on.)
 
-    # When clicked...
-    if st.button('Find a Match!'):
-        # Get recommendations (right now trained on act_score adn sat_score on filtered dataset,
-        # but working to train on all user input w/ dim reduction so that we can consistently
-        # output the top 10 - some of the filters reduce training set drastically s.t. there are
-        # only 4 schools total being trained on.)
+            rec = CollegeRecommender.Recommender(region=region_sel, sat_score=sat_score_val,
+                                                 act_score=act_score_val, funding_type=funding_sel,
+                                                 min_tuition=values[0], max_tuition=values[1])
 
-        rec = CollegeRecommender.Recommender(region=region_sel, sat_score=sat_score_val,
-                                             act_score=act_score_val, funding_type=funding_sel,
-                                             min_tuition=values[0], max_tuition=values[1])
-        uni_recs = rec.predict(df)
-        # Note, I changed recommender.py s.t. it outputs the entire df and then index here for display
-        admrate_df = uni_recs[:10]
-        # distance_scores = uni_recs[['INSTNM', 'SCORE']]
-        admrate_df[['SCORE']] = admrate_df[['SCORE']].apply(lambda x: round(x, 2))
+            whole_rec, uni_recs = rec.predict(df)
+            # Note, I changed recommender.py s.t. it outputs the entire df and then index here for display
+            admrate_df = uni_recs[:10]
+            # distance_scores = uni_recs[['INSTNM', 'SCORE']]
+            admrate_df[['Score']] = admrate_df[['Score']].apply(lambda x: round(x, 2))
 
-        # Visualization column setup and layout
-        # col0 for map, col1 for bar charts
-        ### SOMETHING I'D LIKE TO CHANGE IS TOOLTIP SHOWING TRUE IF NOT OVER PINPOINT
-        cols = st.columns(spec=[1.3, 1], gap='small')
-        with cols[0]:
-            #map background
-            states = alt.topo_feature(data.us_10m.url, feature='states')
-            backgroundMap = alt.Chart(states).mark_geoshape(
-                fill='lightblue',
-                stroke='white').project(
-                'albersUsa').properties(
-                width=700,
-                height=500
-            )
-            # pinpoints setup
-            admrate_df['icon'] = '📍'
-            points = alt.Chart(admrate_df).mark_text(
-                size=25
-            ).encode(
-                latitude='LAT:Q',
-                longitude='LNG:Q',
-                text=alt.Text('icon'),
-                tooltip='INSTNM'
-            )
-            st.write(backgroundMap + points)
+            # Visualization column setup and layout
+            # col0 for map, col1 for bar charts
+            ### SOMETHING I'D LIKE TO CHANGE IS TOOLTIP SHOWING TRUE IF NOT OVER PINPOINT
+            cols = st.columns(spec=[1.3, 1], gap='small')
+            with cols[0]:
+                # map background
+                states = alt.topo_feature(data.us_10m.url, feature='states')
+                backgroundMap = alt.Chart(states).mark_geoshape(
+                    fill='lightblue',
+                    stroke='white').project(
+                    'albersUsa').properties(
+                    width=700,
+                    height=500
+                )
+                # pinpoints setup
+                admrate_df['icon'] = '📍'
+                points = alt.Chart(admrate_df).mark_text(
+                    size=25
+                ).encode(
+                    latitude='LAT:Q',
+                    longitude='LNG:Q',
+                    text=alt.Text('icon'),
+                    tooltip='INSTNM'
+                )
+                st.write(backgroundMap + points)
 
-        with cols[1]:
-            college_filter = alt.selection(type="single", fields=['INSTNM'], init={'INSTNM': admrate_df['INSTNM'][0]})
+            with cols[1]:
+                college_filter = alt.selection(type="single", fields=['INSTNM'],
+                                               init={'INSTNM': admrate_df['INSTNM'][0]})
 
-            admrate_barchart = alt.Chart(admrate_df,
-                                         title='Comparitive Best Fit Scores for Universities',
-                                         width=400).mark_bar(
-                tooltip=True).encode(
-                y=alt.X('INSTNM', title="University Name", sort='-x'),
-                x=alt.Y('SCORE', title="Best Fit Score"),
-                color=alt.condition(college_filter, alt.ColorValue("steelblue"), alt.ColorValue("grey")),
-                tooltip=[alt.Tooltip('SCORE:Q', title="Best Fit Score"),
-                         alt.Tooltip('SATAverage', title="Average SAT"),
-                         alt.Tooltip('ACTMedian', title="Median ACT"),
-                         alt.Tooltip('AverageCost', title='Average Cost'),
-                         alt.Tooltip('AdmissionRate', title='Admission Rate')]).add_selection(college_filter).interactive()
+                admrate_barchart = alt.Chart(admrate_df,
+                                             title='Comparitive Best Fit Scores for Universities',
+                                             width=400).mark_bar(
+                    tooltip=True).encode(
+                    y=alt.X('INSTNM', title="University Name", sort='-x'),
+                    x=alt.Y('Score', title="Best Fit Score"),
+                    color=alt.condition(college_filter, alt.ColorValue("steelblue"), alt.ColorValue("grey")),
+                    tooltip=[alt.Tooltip('Score:Q', title="Best Fit Score"),
+                             alt.Tooltip('SATAverage', title="Average SAT"),
+                             alt.Tooltip('ACTMedian', title="Median ACT"),
+                             alt.Tooltip('AverageCost', title='Average Cost'),
+                             alt.Tooltip('AdmissionRate', title='Admission Rate')]).add_selection(
+                    college_filter).interactive()
 
-            degree_barchart = alt.Chart(get_degree_df(admrate_df, college_filter.selection),
-                                        title='Percentage of Degree type',
-                                        width=400).mark_bar(tooltip=True).encode(
-                                        y=alt.X('variable', title="Degree Type", sort='-x'),
-                                        x=alt.Y('value', title="Proportion"),
-                                        tooltip=[alt.Tooltip('value', title="Percentage")]).transform_filter(college_filter).transform_window(
-                                        rank='rank(value)',
-                                        sort=[alt.SortField('value', order='descending')]).transform_filter(
-                                        alt.datum.rank <= 5)
+                degree_barchart = alt.Chart(get_degree_df(admrate_df, college_filter.selection),
+                                            title='Percentage of Degree type',
+                                            width=400).mark_bar(tooltip=True).encode(
+                    y=alt.X('variable', title="Degree Type", sort='-x'),
+                    x=alt.Y('value', title="Proportion"),
+                    tooltip=[alt.Tooltip('value', title="Percentage")]).transform_filter(
+                    college_filter).transform_window(
+                    rank='rank(value)',
+                    sort=[alt.SortField('value', order='descending')]).transform_filter(
+                    alt.datum.rank <= 5)
 
-            st.write(admrate_barchart & degree_barchart)
+                st.write(admrate_barchart & degree_barchart)
 
 # PART 2: Interactive tool which allows user to investigate statistics and visualizations for a specific school
 # Nice to have: If we finish updates to recommender.py, it'd be nice to have similarity score for the searched school.
-st.subheader("Explore a Specific University")
 
-# drop-down to select school
-school_options = df['INSTNM']
-school_sel = st.selectbox('Type or select a school', school_options)
+if add_selectbox == 'Explore Universities':
 
-# masked_df
-masked_df = df[df['INSTNM'] == school_sel]
-st.markdown(
-    f"""<h5 style='text-align: center; color: black; padding:50px'> {school_sel} is a {masked_df.FundingModel.values[0].lower()}\
- school located in the {masked_df.Region.values[0]}. It resides in a {masked_df.Geography.values[0]} \
-with the zip code {masked_df.ZIP.values[0]}. It accepted {round(masked_df.AdmissionRate.values[0] * 100,2)} percent of \
-students in 2019, and has {int(masked_df.UGDS.values[0])} students enrolled. The highest degree which can be attained here is a {masked_df.HighestDegree.values[0]}, \
-and the predominant degree type is {masked_df.PredominantDegree.values[0]}.""", unsafe_allow_html=True)
+    df = load_data()
+    st.subheader("Explore a Specific University")
 
-# Admission Statistics
-st.markdown(f"""<h5 style='text-align: left; color: black'>ADMISSIONS STATISTICS</h5>""", unsafe_allow_html=True)
-col1, col2, col3, col4, col5 = st.columns(5)
-col1.metric("Average Admission Rate (%)", round(masked_df['AdmissionRate'] * 100, 2))
-col2.metric("Average SAT Score", masked_df.SATAverage)
-col3.metric("Average ACT Score", masked_df.ACTMedian)
-col4.metric("Median Family Income", '$' + str(int(masked_df.MedianFamilyIncome)))
-col5.metric("Average Age of Entry", int(round(masked_df.AverageAgeofEntry,0)))
+    # drop-down to select school
+    school_options = df['INSTNM']
+    school_sel = st.selectbox('Type or select a school', school_options)
 
-#Financial Summary
-st.markdown(f"""<h5 style='text-align: left; color: black'>FINANCIAL SUMMARY</h5>""", unsafe_allow_html=True)
-col1, col2, col3, col4, col5 = st.columns(5)
-col1.metric("Average Cost Per Year", '$' + str(masked_df.AverageCost.values[0]))
-col2.metric("Expenditure", '$' + str(masked_df.Expenditure.values[0]))
-col3.metric("Average Faculty Salary Per Month", '$' + str(masked_df.AverageFacultySalary.values[0]))
-col4.metric("Median Debt (Post-Graduation)", '$' + str(int(masked_df.MedianDebt)))
-col5.metric("Median Earnings (Post-Graduation)", '$' + str(int(masked_df.MedianEarnings)))
+    # masked_df
+    masked_df = df[df['INSTNM'] == school_sel]
+    st.markdown(
+        f"""<h5 style='text-align: center; color: black; padding:50px'> {school_sel} is a {masked_df.FundingModel.values[0].lower()}\
+     school located in the {masked_df.Region.values[0]}. It resides in a {masked_df.Geography.values[0]} \
+    with the zip code {masked_df.ZIP.values[0]}. It accepted {round(masked_df.AdmissionRate.values[0] * 100,2)} percent of \
+    students in 2019, and has {int(masked_df.UGDS.values[0])} students enrolled. The highest degree which can be attained here is a {masked_df.HighestDegree.values[0]}, \
+    and the predominant degree type is {masked_df.PredominantDegree.values[0]}.""", unsafe_allow_html=True)
 
-# Create Demographic Visualizations (can't make this interactive with the given design because the data is already aggregated
-st.markdown(f"""<h5 style='text-align: left; color: black'>DYNAMIC VISUALIZATIONS</h5>""", unsafe_allow_html=True)
-col1, col2 = st.columns(2)
+    # Admission Statistics
+    st.markdown(f"""<h5 style='text-align: left; color: black'>ADMISSIONS STATISTICS</h5>""", unsafe_allow_html=True)
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("Average Admission Rate (%)", round(masked_df['AdmissionRate'] * 100, 2))
+    col2.metric("Average SAT Score", masked_df.SATAverage)
+    col3.metric("Average ACT Score", masked_df.ACTMedian)
+    col4.metric("Median Family Income", '$' + str(int(masked_df.MedianFamilyIncome)))
+    col5.metric("Average Age of Entry", int(round(masked_df.AverageAgeofEntry,0)))
 
-#create gender pie chart
-gender_pie = alt.Chart(get_gender_df(masked_df),
-                       title='Percentage by Gender',
-                       width=350
-                       ).mark_arc().encode(
-                       theta=alt.Theta(field="value", type="quantitative"),
-                       color=alt.Color(field="variable", type="nominal"),
-                       tooltip=[alt.Tooltip('value', title="Proportion")]
-                       )
-# creat degree bar chart
-degree_select_barchart = alt.Chart(get_degree_df(masked_df),
-                                        title='Top 10 Degrees (by Proportion)',
-                                        width=600).mark_bar(
-                tooltip=True).encode(
-                y=alt.Y('variable', title="Degree Type", sort='-x'),
-                x=alt.X('value', title="Proportion"),
-                # if want to make a separate
-                # color='variable',
-                tooltip=[alt.Tooltip('value', title="Percentage")]).transform_window(
-                rank='rank(value)',
-                sort=[alt.SortField('value', order='descending')]).transform_filter(
-                alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
+    #Financial Summary
+    st.markdown(f"""<h5 style='text-align: left; color: black'>FINANCIAL SUMMARY</h5>""", unsafe_allow_html=True)
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("Average Cost Per Year", '$' + str(masked_df.AverageCost.values[0]))
+    col2.metric("Expenditure", '$' + str(masked_df.Expenditure.values[0]))
+    col3.metric("Average Faculty Salary Per Month", '$' + str(masked_df.AverageFacultySalary.values[0]))
+    col4.metric("Median Debt (Post-Graduation)", '$' + str(int(masked_df.MedianDebt)))
+    col5.metric("Median Earnings (Post-Graduation)", '$' + str(int(masked_df.MedianEarnings)))
 
-# crete gender bar chart
-race_barchart = alt.Chart(get_race_df(masked_df),
-                                        title='Proportion by degree ',
-                                        width=600).mark_bar(
-                tooltip=True).encode(
-                y=alt.Y('variable', title="Degree Type", sort='-x'),
-                x=alt.X('value', title="Proportion"),
-                # if want to make a separate
-                # color='variable',
-                tooltip=[alt.Tooltip('value', title="Percentage")]).transform_window(
-                rank='rank(value)',
-                sort=[alt.SortField('value', order='descending')]).transform_filter(
-                alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
+    # Create Demographic Visualizations (can't make this interactive with the given design because the data is already aggregated
+    st.markdown(f"""<h5 style='text-align: left; color: black'>DYNAMIC VISUALIZATIONS</h5>""", unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
 
-# write visualizations to UI (feel free to update format)
-col1.write('\n')
-col1.write(degree_select_barchart)
-col1.write('\n')
-col1.write(race_barchart)
+    #create gender pie chart
+    gender_pie = alt.Chart(get_gender_df(masked_df),
+                           title='Percentage by Gender',
+                           width=350
+                           ).mark_arc().encode(
+                           theta=alt.Theta(field="value", type="quantitative"),
+                           color=alt.Color(field="variable", type="nominal"),
+                           tooltip=[alt.Tooltip('value', title="Proportion")]
+                           )
+    # creat degree bar chart
+    degree_select_barchart = alt.Chart(get_degree_df(masked_df),
+                                            title='Top 10 Degrees (by Proportion)',
+                                            width=600).mark_bar(
+                    tooltip=True).encode(
+                    y=alt.Y('variable', title="Degree Type", sort='-x'),
+                    x=alt.X('value', title="Proportion"),
+                    # if want to make a separate
+                    # color='variable',
+                    tooltip=[alt.Tooltip('value', title="Percentage")]).transform_window(
+                    rank='rank(value)',
+                    sort=[alt.SortField('value', order='descending')]).transform_filter(
+                    alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
 
-col2.write('\n')
-col2.write(gender_pie)
+    # crete gender bar chart
+    race_barchart = alt.Chart(get_race_df(masked_df),
+                                            title='Proportion by degree ',
+                                            width=600).mark_bar(
+                    tooltip=True).encode(
+                    y=alt.Y('variable', title="Degree Type", sort='-x'),
+                    x=alt.X('value', title="Proportion"),
+                    # if want to make a separate
+                    # color='variable',
+                    tooltip=[alt.Tooltip('value', title="Percentage")]).transform_window(
+                    rank='rank(value)',
+                    sort=[alt.SortField('value', order='descending')]).transform_filter(
+                    alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
+
+    # write visualizations to UI (feel free to update format)
+    col1.write('\n')
+    col1.write(degree_select_barchart)
+    col1.write('\n')
+    col1.write(race_barchart)
+
+    col2.write('\n')
+    col2.write(gender_pie)
 
