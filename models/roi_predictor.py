@@ -9,7 +9,19 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestRegressor
 
 
-def goLM(x_train,y_train,x_test,y_test):
+def goLM(df, featureList):
+
+    df_featured = df[featureList]
+
+    # Correlation Matrix with Feature Set
+    showCorrelationMatrix(df_featured)
+
+    # Split train and test
+    x_train,y_train,x_test,y_test = trainingSplit(df_featured)
+
+    # Feature Scaling
+    x_train,x_test = scaleFeatures(x_train,x_test)
+
     # Fit
     x_train_lm = sm.add_constant(x_train)
     y_train_lm = y_train.values.reshape(-1,1)
@@ -88,31 +100,6 @@ def scaleFeatures(x_train,x_test):
     x_test = pd.DataFrame(scaler.fit_transform(x_test), columns=test_cols)
     return x_train,x_test
 
-# def goPCA(df):
-#     x = df.drop("ROI", axis=1).values
-#     x = StandardScaler().fit_transform(x)
-#     pca = PCA(n_components=2)
-#     principalComponents = pca.fit_transform(x)
-#     principalDf = pd.DataFrame(data = principalComponents, columns = ['principal component 1', 'principal component 2'])
-#     finalDf = pd.concat([principalDf, df[['ROI']]], axis = 1)
-#     fig = plt.figure(figsize = (8,8))
-#     ax = fig.add_subplot(1,1,1) 
-#     ax.set_xlabel('Principal Component 1', fontsize = 15)
-#     ax.set_ylabel('Principal Component 2', fontsize = 15)
-#     ax.set_title('2 component PCA', fontsize = 20)
-
-#     targets = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
-#     colors = ['r', 'g', 'b']
-#     for target, color in zip(targets,colors):
-#         indicesToKeep = finalDf['target'] == target
-#         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
-#                 , finalDf.loc[indicesToKeep, 'principal component 2']
-#                 , c = color
-#                 , s = 50)
-#     ax.legend(targets)
-#     ax.grid()
-#     return df
-
 def removeStrings(df):
     return df.drop(df.select_dtypes(['object']).columns,axis=1)
 
@@ -131,47 +118,38 @@ def dropCollinear(df,corr):
 scorecard_working = load_data()
 scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["AverageCost"]/scorecard_working["MedianEarnings"])
 
+# clean 
+scorecard_working = cleanNaN(scorecard_working)
+scorecard_working = scorecard_working.drop(["AverageCost","ACTMedian","CONTROL"], axis=1) # drop ACT because not as precise as SAT
+
 # show correlation matrix of all columns
 corr = showCorrelationMatrix(scorecard_working)
 scorecard_working = dropCollinear(scorecard_working, corr)
 
-# clean NaN
-scorecard_working = cleanNaN(scorecard_working)
 
 # reduce to features for LM
-featureList = ["MedianFamilyIncome","AverageCost","AverageFacultySalary","AverageAgeofEntry","ROI"]
-df_featured = scorecard_working[featureList]
+featureList = ["MedianFamilyIncome","SATAverage","AverageFacultySalary","AverageAgeofEntry","ROI"]
 
-# Correlation Matrix with Feature Set
-showCorrelationMatrix(df_featured)
-
-# Split train and test
-x_train,y_train,x_test,y_test = trainingSplit(df_featured)
-
-# Feature Scaling
-x_train,x_test = scaleFeatures(x_train,x_test)
-
-# Linear Regression
-goLM(x_train,y_train,x_test,y_test)
+# LM with important features
+goLM(scorecard_working,featureList)
 # Heteroscedasticity in larger ROI predictions (error non-normal)
 
-# PCA
-# scorecard_working = load_data()
-# scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["AverageCost"]/scorecard_working["MedianEarnings"])
-# scorecard_working = removeStrings(scorecard_working)
-
-# goPCA(scorecard_working)
-
-# Random Fores
+# Random Forest
 model = RandomForestRegressor(random_state=1, max_depth=10)
 df=pd.get_dummies(scorecard_working)
 x_train,y_train,x_test,y_test = trainingSplit(df)
 model.fit(x_train,y_train)
 features = df.columns
 importances = model.feature_importances_
-indices = np.argsort(importances)[-9:]  # top 10 features
+top10indices = np.argsort(importances)[-9:]  # top 10 features
 plt.title('Feature Importances')
-plt.barh(range(len(indices)), importances[indices], color='b', align='center')
-plt.yticks(range(len(indices)), [features[i] for i in indices])
+plt.barh(range(len(top10indices)), importances[top10indices], color='b', align='center')
+plt.yticks(range(len(top10indices)), [features[i] for i in top10indices])
 plt.xlabel('Relative Importance')
 plt.show()
+
+important_features = [features[i] for i in top10indices]
+important_features.append("ROI")
+
+# LM with important features
+goLM(df,important_features)
