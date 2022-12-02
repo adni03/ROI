@@ -5,6 +5,9 @@ from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestRegressor
+
 
 def goLM(x_train,y_train,x_test,y_test):
     # Fit
@@ -54,11 +57,11 @@ def showCorrelationMatrix(df):
         go.Heatmap(
             x = correlation_matrix.columns,
             y = correlation_matrix.index,
-            z = np.array(correlation_matrix),
-            text=correlation_matrix.values,
+            z = np.array(correlation_matrix)
         )
     )
     fig.show()
+    return correlation_matrix
 
 def goClean(df):
     ## dummify geography
@@ -85,33 +88,90 @@ def scaleFeatures(x_train,x_test):
     x_test = pd.DataFrame(scaler.fit_transform(x_test), columns=test_cols)
     return x_train,x_test
 
+# def goPCA(df):
+#     x = df.drop("ROI", axis=1).values
+#     x = StandardScaler().fit_transform(x)
+#     pca = PCA(n_components=2)
+#     principalComponents = pca.fit_transform(x)
+#     principalDf = pd.DataFrame(data = principalComponents, columns = ['principal component 1', 'principal component 2'])
+#     finalDf = pd.concat([principalDf, df[['ROI']]], axis = 1)
+#     fig = plt.figure(figsize = (8,8))
+#     ax = fig.add_subplot(1,1,1) 
+#     ax.set_xlabel('Principal Component 1', fontsize = 15)
+#     ax.set_ylabel('Principal Component 2', fontsize = 15)
+#     ax.set_title('2 component PCA', fontsize = 20)
+
+#     targets = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
+#     colors = ['r', 'g', 'b']
+#     for target, color in zip(targets,colors):
+#         indicesToKeep = finalDf['target'] == target
+#         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+#                 , finalDf.loc[indicesToKeep, 'principal component 2']
+#                 , c = color
+#                 , s = 50)
+#     ax.legend(targets)
+#     ax.grid()
+#     return df
+
+def removeStrings(df):
+    return df.drop(df.select_dtypes(['object']).columns,axis=1)
+
+def cleanNaN(df):
+    return df.dropna()
+
+def dropCollinear(df,corr):
+    # Get upper triangle of matrix
+    upper = corr.where(np.triu(np.ones(corr.shape), k = 1).astype(bool))
+        
+    to_drop = [column for column in upper.columns if any(upper[column].abs() > 0.9)]
+    print("dropping {} columns".format(len(to_drop)))
+    return df.drop(to_drop,axis=1)
+
 # load data
 scorecard_working = load_data()
+scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["AverageCost"]/scorecard_working["MedianEarnings"])
 
 # show correlation matrix of all columns
-showCorrelationMatrix(scorecard_working)
+corr = showCorrelationMatrix(scorecard_working)
+scorecard_working = dropCollinear(scorecard_working, corr)
 
-# add ROI column assuming 10% of income used to pay off debt
-scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["AverageCost"]/scorecard_working["MedianEarnings"])
-featureList = ["Geography","MedianFamilyIncome","AdmissionRate","ACTMedian","SATAverage","AverageCost","Expenditure","AverageFacultySalary","AverageAgeofEntry","ROI"]
-scorecard_working = scorecard_working[featureList]
+# clean NaN
+scorecard_working = cleanNaN(scorecard_working)
+
+# reduce to features for LM
+featureList = ["MedianFamilyIncome","AverageCost","AverageFacultySalary","AverageAgeofEntry","ROI"]
+df_featured = scorecard_working[featureList]
 
 # Correlation Matrix with Feature Set
-showCorrelationMatrix(scorecard_working)
-
-# Should we consider some of the features correlated to median earnings?
-
-# Feature Cleaning 
-scorecard_working = goClean(scorecard_working)
+showCorrelationMatrix(df_featured)
 
 # Split train and test
-x_train,y_train,x_test,y_test = trainingSplit(scorecard_working)
+x_train,y_train,x_test,y_test = trainingSplit(df_featured)
 
 # Feature Scaling
 x_train,x_test = scaleFeatures(x_train,x_test)
 
+# Linear Regression
 goLM(x_train,y_train,x_test,y_test)
-
 # Heteroscedasticity in larger ROI predictions (error non-normal)
 
-# TODO: Convert ACT to SAT before feature scaling, prune insignificant vars prior to prediction, revert back to debt and add medianfamilyincome
+# PCA
+# scorecard_working = load_data()
+# scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["AverageCost"]/scorecard_working["MedianEarnings"])
+# scorecard_working = removeStrings(scorecard_working)
+
+# goPCA(scorecard_working)
+
+# Random Fores
+model = RandomForestRegressor(random_state=1, max_depth=10)
+df=pd.get_dummies(scorecard_working)
+x_train,y_train,x_test,y_test = trainingSplit(df)
+model.fit(x_train,y_train)
+features = df.columns
+importances = model.feature_importances_
+indices = np.argsort(importances)[-9:]  # top 10 features
+plt.title('Feature Importances')
+plt.barh(range(len(indices)), importances[indices], color='b', align='center')
+plt.yticks(range(len(indices)), [features[i] for i in indices])
+plt.xlabel('Relative Importance')
+plt.show()
