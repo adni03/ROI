@@ -111,7 +111,7 @@ with st.spinner(text="Loading data..."):
         # output the top 10 - some of the filters reduce training set drastically s.t. there are
         # only 4 schools total being trained on.)
 
-        rec = CollegeRecommender.Recommender(region=region_sel, sat_score=sat_score_val,
+        whole_rec, rec = CollegeRecommender.Recommender(region=region_sel, sat_score=sat_score_val,
                                              act_score=act_score_val, funding_type=funding_sel,
                                              min_tuition=values[0], max_tuition=values[1])
         uni_recs = rec.predict(df)
