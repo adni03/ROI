@@ -86,7 +86,8 @@ class Recommender:
                                  )), axis=1
                                  )
 
-        sorted_dis = np.sort(distances)[:10]
+        sorted_dis = np.sort(distances)
+        # sorted_dis = np.sort(distances)[:10]
         indices = np.argsort(sorted_dis)
         university_recs = university_cluster.loc[indices]
         university_recs['DISTANCES'] = sorted_dis
