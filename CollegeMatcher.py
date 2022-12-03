@@ -130,59 +130,78 @@ if add_selectbox == 'University Recommender':
             # Visualization column setup and layout
             # col0 for map, col1 for bar charts
             ### SOMETHING I'D LIKE TO CHANGE IS TOOLTIP SHOWING TRUE IF NOT OVER PINPOINT
-            cols = st.columns(spec=[1.3, 1], gap='small')
-            with cols[0]:
-                # map background
-                states = alt.topo_feature(data.us_10m.url, feature='states')
-                backgroundMap = alt.Chart(states).mark_geoshape(
-                    fill='lightblue',
-                    stroke='white').project(
-                    'albersUsa').properties(
-                    width=700,
-                    height=500
-                )
-                # pinpoints setup
-                admrate_df['icon'] = '📍'
-                points = alt.Chart(admrate_df).mark_text(
-                    size=25
-                ).encode(
-                    latitude='LAT:Q',
-                    longitude='LNG:Q',
-                    text=alt.Text('icon'),
-                    tooltip='INSTNM'
-                )
-                st.write(backgroundMap + points)
 
-            with cols[1]:
-                college_filter = alt.selection(type="single", fields=['INSTNM'],
-                                               init={'INSTNM': admrate_df['INSTNM'][0]})
+            # map background
+            states = alt.topo_feature(data.us_10m.url, feature='states')
+            backgroundMap = alt.Chart(states).mark_geoshape(
+                fill='lightblue',
+                stroke='white').project(
+                'albersUsa').properties(
+                width=700,
+                height=500
+            )
+            # pinpoints setup
+            admrate_df['icon'] = '📍'
+            points = alt.Chart(admrate_df).mark_text(
+                size=25
+            ).encode(
+                latitude='LAT:Q',
+                longitude='LNG:Q',
+                text=alt.Text('icon'),
+                tooltip='INSTNM'
+            )
+            st.write(backgroundMap + points)
 
-                admrate_barchart = alt.Chart(admrate_df,
-                                             title='Comparitive Best Fit Scores for Universities',
-                                             width=400).mark_bar(
-                    tooltip=True).encode(
-                    y=alt.X('INSTNM', title="University Name", sort='-x'),
-                    x=alt.Y('Score', title="Best Fit Score"),
-                    color=alt.condition(college_filter, alt.ColorValue("steelblue"), alt.ColorValue("grey")),
-                    tooltip=[alt.Tooltip('Score:Q', title="Best Fit Score"),
-                             alt.Tooltip('SATAverage', title="Average SAT"),
-                             alt.Tooltip('ACTMedian', title="Median ACT"),
-                             alt.Tooltip('AverageCost', title='Average Cost'),
-                             alt.Tooltip('AdmissionRate', title='Admission Rate')]).add_selection(
-                    college_filter).interactive()
+            college_filter = alt.selection_multi(fields=['INSTNM'])
 
-                degree_barchart = alt.Chart(get_degree_df(admrate_df, college_filter.selection),
-                                            title='Percentage of Degree type',
-                                            width=400).mark_bar(tooltip=True).encode(
-                    y=alt.X('variable', title="Degree Type", sort='-x'),
-                    x=alt.Y('value', title="Proportion"),
-                    tooltip=[alt.Tooltip('value', title="Percentage")]).transform_filter(
-                    college_filter).transform_window(
-                    rank='rank(value)',
-                    sort=[alt.SortField('value', order='descending')]).transform_filter(
-                    alt.datum.rank <= 5)
+            admrate_barchart = alt.Chart(admrate_df,
+                                         title='Comparitive Best Fit Scores for Universities',
+                                         width=400).mark_bar(
+                tooltip=True).encode(
+                y=alt.X('INSTNM', title="University Name", sort='-x'),
+                x=alt.Y('Score', title="Best Fit Score"),
+                color=alt.condition(college_filter, alt.ColorValue("steelblue"), alt.ColorValue("grey")),
+                tooltip=[alt.Tooltip('Score:Q', title="Best Fit Score"),
+                         alt.Tooltip('SATAverage', title="Average SAT"),
+                         alt.Tooltip('ACTMedian', title="Median ACT"),
+                         alt.Tooltip('AverageCost', title='Average Cost'),
+                         alt.Tooltip('AdmissionRate', title='Admission Rate')]).add_selection(
+                college_filter).interactive()
 
-                st.write(admrate_barchart & degree_barchart)
+            melted_df = pd.melt(admrate_df, id_vars=['INSTNM'],
+                                value_vars=['UGDS_WOMEN', 'UGDS_MEN'],
+                                value_name='ScoreValue',
+                                var_name='Scores')
+
+            melted_df['INSTNM'] = melted_df['INSTNM'].apply(lambda x: x.strip())
+
+            act_sat_chart = alt.Chart(melted_df,
+                                      title='Comparision of Gender at Universities'
+                                      ).mark_bar().encode(
+                x=alt.X('Scores:O'),
+                y=alt.Y('ScoreValue:Q', title="Score Value"),
+                color=alt.Color('Scores', scale=alt.Scale(scheme='paired'), legend=None),
+                column=alt.Column('INSTNM:N', header=alt.Header(labelAngle=-90, labelAlign='right'), title="Universities")
+            ).transform_filter(college_filter)
+
+            melted_cost_df = pd.melt(admrate_df, id_vars=['INSTNM'],
+                                value_vars=['AverageCost', 'Expenditure'],
+                                value_name='Costs',
+                                var_name='Scores')
+
+            cost_barchart = alt.Chart(melted_cost_df).mark_bar().encode(
+                x=alt.X('INSTNM', title="University Name"),
+                y=alt.Y('sum(Costs)', title="Total Expenditure"),
+                color=alt.Color('Scores', scale=alt.Scale(scheme='paired')),
+                tooltip = [alt.Tooltip('sum(Costs)', title="Total Expenditure")]
+            ).transform_filter(college_filter)
+
+            hcharts = alt.hconcat(act_sat_chart, cost_barchart)
+            charts = alt.vconcat(
+                admrate_barchart, hcharts
+            )
+            charts
+
 
 # PART 2: Interactive tool which allows user to investigate statistics and visualizations for a specific school
 # Nice to have: If we finish updates to recommender.py, it'd be nice to have similarity score for the searched school.
