@@ -55,14 +55,17 @@ def get_degree_df(df, *filter):
     print(fos)
     return fos
 
+
 def get_race_df(df, *filter):
     # include columns we're interested in
     columns = ['UGDS_WHITE', 'UGDS_BLACK', 'UGDS_HISP', 'UGDS_ASIAN', 'UGDS_AIAN', 'UGDS_NHPI', 'UGDS_2MOR', 'UGDS_NRA',
                'UGDS_UNKN', 'UGDS_WHITENH', 'UGDS_BLACKNH', 'UGDS_API', 'UGDS_AIANOLD', 'UGDS_HISPOLD', 'INSTNM']
 
     # degrees to rename columns
-    races = ['White','Black','Hispanic','Asian','American Indian/Alaskan Native','Native Hawaiian/Pacific Islander','Two or more','Non-resident alien',
-             'Unknown','White Non-Hispanic','Black Non-Hispanic','Asian Pacific Islander','American Indian/Alaskan Native (prior to 2009)','Hispanic (prior to 2009)']
+    races = ['White', 'Black', 'Hispanic', 'Asian', 'American Indian/Alaskan Native',
+             'Native Hawaiian/Pacific Islander', 'Two or more', 'Non-resident alien',
+             'Unknown', 'White Non-Hispanic', 'Black Non-Hispanic', 'Asian Pacific Islander',
+             'American Indian/Alaskan Native (prior to 2009)', 'Hispanic (prior to 2009)']
 
     # Transform dataframe and include only required columns
     race_df = df.loc[:, df.columns.isin(columns)].set_index('INSTNM')
@@ -71,13 +74,14 @@ def get_race_df(df, *filter):
     race_df = pd.melt(race_df, id_vars=['INSTNM'])
     return race_df
 
+
 def get_gender_df(df, *filter):
     # include columns we're interested in
     columns = ['UGDS_MEN', 'UGDS_WOMEN', 'INSTNM']
     # degrees to rename columns
     # Transform dataframe and include only required columns
     gender_df = df.loc[:, df.columns.isin(columns)].set_index('INSTNM')
-    gender_df = gender_df.rename(columns=dict(zip(gender_df.columns.tolist(), ['Men','Women']))).T
+    gender_df = gender_df.rename(columns=dict(zip(gender_df.columns.tolist(), ['Men', 'Women']))).T
     gender_df = gender_df.T.reset_index()
     gender_df = pd.melt(gender_df, id_vars=['INSTNM'])
     return gender_df
@@ -91,7 +95,18 @@ def get_gender_df(df, *filter):
 if add_selectbox == 'University Recommender':
     with st.spinner(text="Loading data..."):
         df = load_data()
-        st.text('Find the right college for you!')
+
+        st.image('./pics/carnegie-hero-banner.jpg', caption='Source: https://www.oracle.com/customers/carnegie-mellon/')
+        st.markdown(
+            """<h1 style='text-align: left!important; color: black;'> University Matcher """, unsafe_allow_html=True)
+        st.markdown(
+            """<p style='text-align: left; color: #474c54'> University Matcher helps you get started on your
+            college applications by <b>recommending universities</b>, <b>providing comparisons</b> and an
+            expected <b>return-on-investment</b> for your education. Here you can find universities that
+            suit you, dig deeper into demographics and financial information, and understand factors that
+            contribute to a good return-on-investment.<br>""", unsafe_allow_html=True)
+        st.markdown("<h6 style='text-align: left; color: #474c54'> Find the right college for you!", unsafe_allow_html=True)
+
 
         # widget layout/setup
         col1, col2, col3 = st.columns(3)
@@ -131,13 +146,19 @@ if add_selectbox == 'University Recommender':
             # col0 for map, col1 for bar charts
             ### SOMETHING I'D LIKE TO CHANGE IS TOOLTIP SHOWING TRUE IF NOT OVER PINPOINT
 
+            st.markdown(
+                """<p style='text-align: left; color: #474c54'> Based on your scores and 
+                    preferences, here is a list of universities that best suits your profile.
+                    We calculate a <b>Best Fit Score</b> and present universities in order of this score. If you'd like to know
+                    more about how this score was computed, please expand the section below to find out. """, unsafe_allow_html=True)
+
             # map background
             states = alt.topo_feature(data.us_10m.url, feature='states')
             backgroundMap = alt.Chart(states).mark_geoshape(
                 fill='lightblue',
                 stroke='white').project(
                 'albersUsa').properties(
-                width=700,
+                width=600,
                 height=500
             )
             # pinpoints setup
@@ -150,65 +171,119 @@ if add_selectbox == 'University Recommender':
                 text=alt.Text('icon'),
                 tooltip='INSTNM'
             )
-            st.write(backgroundMap + points)
+            uni_map_col1, uni_map_col2 = st.columns([2, 3], gap="medium")
+            with uni_map_col2:
+                st.write(backgroundMap + points)
+            with uni_map_col1:
+                display_df = admrate_df[['INSTNM', 'AverageCost', 'MedianEarnings']].copy()
+                display_df.rename(columns={'INSTNM': 'University', 'AverageCost': 'Tuition', 'MedianEarnings': 'Earnings'}
+                                  , inplace=True)
+                st.dataframe(display_df)
+
+            with st.expander('How we calculate the Best Fit Score'):
+                st.markdown(
+                    """<p style='text-align: left; color: #474c54'> We take into consideration your funding 
+                and location preferences first and find universities that satisfy those criteria. Next, we look at the
+                average SAT and ACT scores for each of these universities and calculate a squared difference. The smaller
+                the distance is, better the fit. To make the score more intuitive, we invert the distances and divide by
+                the sum of the inverted distances to arrive at the Best Fit Score.""",
+                    unsafe_allow_html=True)
+
+            st.markdown(
+                """<p style='text-align: left; color: #474c54'> Shift+Click on the bars below to compare the Gender 
+                 composition and Total Expense between universities.""",
+                unsafe_allow_html=True)
 
             college_filter = alt.selection_multi(fields=['INSTNM'])
 
             admrate_barchart = alt.Chart(admrate_df,
                                          title='Comparitive Best Fit Scores for Universities',
-                                         width=400).mark_bar(
+                                         height=300,
+                                         width=800).mark_bar(
                 tooltip=True).encode(
                 y=alt.X('INSTNM', title="University Name", sort='-x'),
                 x=alt.Y('Score', title="Best Fit Score"),
-                color=alt.condition(college_filter, alt.ColorValue("steelblue"), alt.ColorValue("grey")),
+                color=alt.condition(college_filter, alt.ColorValue("steelblue"), alt.ColorValue("lightblue")),
                 tooltip=[alt.Tooltip('Score:Q', title="Best Fit Score"),
                          alt.Tooltip('SATAverage', title="Average SAT"),
                          alt.Tooltip('ACTMedian', title="Median ACT"),
                          alt.Tooltip('AverageCost', title='Average Cost'),
                          alt.Tooltip('AdmissionRate', title='Admission Rate')]).add_selection(
-                college_filter).interactive()
+                college_filter)
 
             melted_df = pd.melt(admrate_df, id_vars=['INSTNM'],
                                 value_vars=['UGDS_WOMEN', 'UGDS_MEN'],
                                 value_name='ScoreValue',
                                 var_name='Scores')
 
+            melted_df['Scores'] = melted_df['Scores'].apply(lambda x: 'WOMEN' if x == 'UGDS_WOMEN' else 'MEN')
             melted_df['INSTNM'] = melted_df['INSTNM'].apply(lambda x: x.strip())
 
-            act_sat_chart = alt.Chart(melted_df,
-                                      title='Comparision of Gender at Universities'
-                                      ).mark_bar().encode(
-                x=alt.X('Scores:O'),
-                y=alt.Y('ScoreValue:Q', title="Score Value"),
+            gender_chart = alt.Chart(melted_df,
+                                     title='Comparision of Gender at Universities'
+                                     ).mark_bar().encode(
+                x=alt.X('Scores:O', title="Gender"),
+                y=alt.Y('ScoreValue:Q', title="Proportion of gender"),
                 color=alt.Color('Scores', scale=alt.Scale(scheme='paired'), legend=None),
-                column=alt.Column('INSTNM:N', header=alt.Header(labelAngle=-90, labelAlign='right'), title="Universities")
+                column=alt.Column('INSTNM:N', header=alt.Header(labelAngle=-90, labelAlign='right'),
+                                  title="Universities")
             ).transform_filter(college_filter)
 
             melted_cost_df = pd.melt(admrate_df, id_vars=['INSTNM'],
-                                value_vars=['AverageCost', 'Expenditure'],
-                                value_name='Costs',
-                                var_name='Scores')
+                                     value_vars=['AverageCost', 'Expenditure'],
+                                     value_name='Costs',
+                                     var_name='Scores')
 
-            cost_barchart = alt.Chart(melted_cost_df).mark_bar().encode(
+            cost_barchart = alt.Chart(melted_cost_df,
+                                      title='Comparison of expenditure at Universities').mark_bar().encode(
                 x=alt.X('INSTNM', title="University Name"),
                 y=alt.Y('sum(Costs)', title="Total Expenditure"),
                 color=alt.Color('Scores', scale=alt.Scale(scheme='paired')),
-                tooltip = [alt.Tooltip('sum(Costs)', title="Total Expenditure")]
+                tooltip=[alt.Tooltip('Costs:Q', title='Expenditure')]
             ).transform_filter(college_filter)
 
-            hcharts = alt.hconcat(act_sat_chart, cost_barchart)
+            hcharts = alt.hconcat(gender_chart, cost_barchart)
             charts = alt.vconcat(
                 admrate_barchart, hcharts
             )
             charts
 
+            st.subheader("About your Best Fit University:")
+            school_sel = admrate_df['INSTNM'][0]
+            masked_df = df[df['INSTNM'] == school_sel]
+            st.markdown(
+                f"""<p style='text-align: left; color: #474c54;'> {school_sel} is a {masked_df.FundingModel.values[0].lower()}\
+                 school located in the {masked_df.Region.values[0]}. It resides in a {masked_df.Geography.values[0]} \
+                with the zip code {masked_df.ZIP.values[0]}. It accepted {round(masked_df.AdmissionRate.values[0] * 100, 2)} percent of \
+                students in 2019, and has {int(masked_df.UGDS.values[0])} students enrolled. The highest degree which can be attained here is a {masked_df.HighestDegree.values[0]}, \
+                and the predominant degree type is {masked_df.PredominantDegree.values[0]}.""", unsafe_allow_html=True)
+
+            # Admission Statistics
+            st.markdown(f"""<h5 style='text-align: left; color: black'>ADMISSIONS STATISTICS</h5>""",
+                        unsafe_allow_html=True)
+            col1, col2, col3, col4, col5 = st.columns(5)
+            col1.metric("Average Admission Rate (%)", round(masked_df['AdmissionRate'] * 100, 2))
+            col2.metric("Average SAT Score", masked_df.SATAverage)
+            col3.metric("Average ACT Score", masked_df.ACTMedian)
+            col4.metric("Median Family Income", '$' + str(int(masked_df.MedianFamilyIncome)))
+            col5.metric("Average Age of Entry", int(round(masked_df.AverageAgeofEntry, 0)))
+
+            # Financial Summary
+            st.markdown(f"""<h5 style='text-align: left; color: black'>FINANCIAL SUMMARY</h5>""",
+                        unsafe_allow_html=True)
+            col1, col2, col3, col4, col5 = st.columns(5)
+            col1.metric("Average Cost Per Year", '$' + str(masked_df.AverageCost.values[0]))
+            col2.metric("Expenditure", '$' + str(masked_df.Expenditure.values[0]))
+            col3.metric("Average Faculty Salary Per Month", '$' + str(masked_df.AverageFacultySalary.values[0]))
+            col4.metric("Median Debt (Post-Graduation)", '$' + str(int(masked_df.MedianDebt)))
+            col5.metric("Median Earnings (Post-Graduation)", '$' + str(int(masked_df.MedianEarnings)))
 
 # PART 2: Interactive tool which allows user to investigate statistics and visualizations for a specific school
 # Nice to have: If we finish updates to recommender.py, it'd be nice to have similarity score for the searched school.
 
 if add_selectbox == 'Explore Universities':
-
     df = load_data()
+    st.image('./pics/carnegie-hero-banner.jpg', caption='Source: https://www.oracle.com/customers/carnegie-mellon/')
     st.subheader("Explore a Specific University")
 
     # drop-down to select school
@@ -220,7 +295,7 @@ if add_selectbox == 'Explore Universities':
     st.markdown(
         f"""<h5 style='text-align: center; color: black; padding:50px'> {school_sel} is a {masked_df.FundingModel.values[0].lower()}\
      school located in the {masked_df.Region.values[0]}. It resides in a {masked_df.Geography.values[0]} \
-    with the zip code {masked_df.ZIP.values[0]}. It accepted {round(masked_df.AdmissionRate.values[0] * 100,2)} percent of \
+    with the zip code {masked_df.ZIP.values[0]}. It accepted {round(masked_df.AdmissionRate.values[0] * 100, 2)} percent of \
     students in 2019, and has {int(masked_df.UGDS.values[0])} students enrolled. The highest degree which can be attained here is a {masked_df.HighestDegree.values[0]}, \
     and the predominant degree type is {masked_df.PredominantDegree.values[0]}.""", unsafe_allow_html=True)
 
@@ -231,9 +306,9 @@ if add_selectbox == 'Explore Universities':
     col2.metric("Average SAT Score", masked_df.SATAverage)
     col3.metric("Average ACT Score", masked_df.ACTMedian)
     col4.metric("Median Family Income", '$' + str(int(masked_df.MedianFamilyIncome)))
-    col5.metric("Average Age of Entry", int(round(masked_df.AverageAgeofEntry,0)))
+    col5.metric("Average Age of Entry", int(round(masked_df.AverageAgeofEntry, 0)))
 
-    #Financial Summary
+    # Financial Summary
     st.markdown(f"""<h5 style='text-align: left; color: black'>FINANCIAL SUMMARY</h5>""", unsafe_allow_html=True)
     col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Average Cost Per Year", '$' + str(masked_df.AverageCost.values[0]))
@@ -246,42 +321,42 @@ if add_selectbox == 'Explore Universities':
     st.markdown(f"""<h5 style='text-align: left; color: black'>DYNAMIC VISUALIZATIONS</h5>""", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
 
-    #create gender pie chart
+    # create gender pie chart
     gender_pie = alt.Chart(get_gender_df(masked_df),
                            title='Percentage by Gender',
                            width=350
                            ).mark_arc().encode(
-                           theta=alt.Theta(field="value", type="quantitative"),
-                           color=alt.Color(field="variable", type="nominal"),
-                           tooltip=[alt.Tooltip('value', title="Proportion")]
-                           )
+        theta=alt.Theta(field="value", type="quantitative"),
+        color=alt.Color(field="variable", type="nominal"),
+        tooltip=[alt.Tooltip('value', title="Proportion")]
+    )
     # creat degree bar chart
     degree_select_barchart = alt.Chart(get_degree_df(masked_df),
-                                            title='Top 10 Degrees (by Proportion)',
-                                            width=600).mark_bar(
-                    tooltip=True).encode(
-                    y=alt.Y('variable', title="Degree Type", sort='-x'),
-                    x=alt.X('value', title="Proportion"),
-                    # if want to make a separate
-                    # color='variable',
-                    tooltip=[alt.Tooltip('value', title="Percentage")]).transform_window(
-                    rank='rank(value)',
-                    sort=[alt.SortField('value', order='descending')]).transform_filter(
-                    alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
+                                       title='Top 10 Degrees (by Proportion)',
+                                       width=600).mark_bar(
+        tooltip=True).encode(
+        y=alt.Y('variable', title="Degree Type", sort='-x'),
+        x=alt.X('value', title="Proportion"),
+        # if want to make a separate
+        # color='variable',
+        tooltip=[alt.Tooltip('value', title="Percentage")]).transform_window(
+        rank='rank(value)',
+        sort=[alt.SortField('value', order='descending')]).transform_filter(
+        alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
 
     # crete gender bar chart
     race_barchart = alt.Chart(get_race_df(masked_df),
-                                            title='Proportion by degree ',
-                                            width=600).mark_bar(
-                    tooltip=True).encode(
-                    y=alt.Y('variable', title="Degree Type", sort='-x'),
-                    x=alt.X('value', title="Proportion"),
-                    # if want to make a separate
-                    # color='variable',
-                    tooltip=[alt.Tooltip('value', title="Percentage")]).transform_window(
-                    rank='rank(value)',
-                    sort=[alt.SortField('value', order='descending')]).transform_filter(
-                    alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
+                              title='Proportion by degree ',
+                              width=600).mark_bar(
+        tooltip=True).encode(
+        y=alt.Y('variable', title="Degree Type", sort='-x'),
+        x=alt.X('value', title="Proportion"),
+        # if want to make a separate
+        # color='variable',
+        tooltip=[alt.Tooltip('value', title="Percentage")]).transform_window(
+        rank='rank(value)',
+        sort=[alt.SortField('value', order='descending')]).transform_filter(
+        alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
 
     # write visualizations to UI (feel free to update format)
     col1.write('\n')
@@ -291,4 +366,3 @@ if add_selectbox == 'Explore Universities':
 
     col2.write('\n')
     col2.write(gender_pie)
-
