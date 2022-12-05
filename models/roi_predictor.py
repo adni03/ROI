@@ -114,6 +114,22 @@ def dropCollinear(df,corr):
     print("dropping {} columns".format(len(to_drop)))
     return df.drop(to_drop,axis=1)
 
+def goPCA(df):
+    x = df.drop("ROI", axis=1).values
+    x = StandardScaler().fit_transform(x)
+    pca = PCA(n_components=8)
+    principalComponents = pca.fit_transform(x)
+    columns = ["principal component {}".format(i) for i in range(1,9)]
+    principalDf = pd.DataFrame(data = principalComponents, columns = columns)
+    finalDf = pd.concat([principalDf, df[['ROI']]], axis = 1)
+    fig = plt.figure(figsize = (8,8))
+    ax = fig.add_subplot(1,1,1) 
+    ax.set_xlabel('Principal Component 1', fontsize = 15)
+    ax.set_ylabel('Principal Component 2', fontsize = 15)
+    ax.set_title('8 component PCA', fontsize = 20)
+
+    return finalDf
+
 # load data
 scorecard_working = load_data()
 scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["AverageCost"]/scorecard_working["MedianEarnings"])
@@ -126,7 +142,6 @@ scorecard_working = scorecard_working.drop(["AverageCost","ACTMedian","CONTROL"]
 corr = showCorrelationMatrix(scorecard_working)
 scorecard_working = dropCollinear(scorecard_working, corr)
 
-
 # reduce to features for LM
 featureList = ["MedianFamilyIncome","SATAverage","AverageFacultySalary","AverageAgeofEntry","ROI"]
 
@@ -134,13 +149,22 @@ featureList = ["MedianFamilyIncome","SATAverage","AverageFacultySalary","Average
 goLM(scorecard_working,featureList)
 # Heteroscedasticity in larger ROI predictions (error non-normal)
 
+# PCA
+scorecard_working = load_data()
+scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["AverageCost"]/scorecard_working["MedianEarnings"])
+scorecard_working = removeStrings(scorecard_working)
+scorecard_working = scorecard_working.dropna()
+pcaDF = goPCA(scorecard_working)
+pcaDF = pcaDF.dropna()
+goLM(pcaDF,pcaDF.columns)
+
 # Random Forest
-model = RandomForestRegressor(random_state=1, max_depth=10)
+rf = RandomForestRegressor(random_state=1, max_depth=10)
 df=pd.get_dummies(scorecard_working)
 x_train,y_train,x_test,y_test = trainingSplit(df)
-model.fit(x_train,y_train)
+rf.fit(x_train,y_train)
 features = df.columns
-importances = model.feature_importances_
+importances = rf.feature_importances_
 top10indices = np.argsort(importances)[-9:]  # top 10 features
 plt.title('Feature Importances')
 plt.barh(range(len(top10indices)), importances[top10indices], color='b', align='center')
@@ -150,6 +174,21 @@ plt.show()
 
 important_features = [features[i] for i in top10indices]
 important_features.append("ROI")
+
+# Predict
+x_test = sm.add_constant(x_test)
+y_pred = rf.predict(x_test)
+
+# Predicted vs Actual
+xmax = max(y_test)
+ymax = max(y_pred)
+plt.xlim((0, xmax))
+plt.ylim((0, ymax))
+plt.plot([0, xmax], [0, ymax]) # plots line y = x
+plt.scatter(y_test,y_pred,color='blue')
+plt.xlabel("Actual",fontsize=15)
+plt.ylabel("Predicted",fontsize=15)
+plt.title("Predicted vs. Actual",fontsize=18)
 
 # LM with important features
 goLM(df,important_features)
