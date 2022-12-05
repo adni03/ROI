@@ -10,14 +10,12 @@ def load_data():
     df = pd.read_csv('data/college_data_working.csv')
     return df
 
-
 st.set_page_config(layout='wide', page_title='University MatchMaker')
 
 add_selectbox = st.sidebar.selectbox('Select a view to explore:',
                                      ('University Recommender',
                                       'Explore Universities',
                                       'University ROI'))
-
 
 # Method to transform data frame for degree bar chart
 def get_degree_df(df, *filter):
@@ -97,6 +95,7 @@ def get_gender_df(df, *filter):
 if add_selectbox == 'University Recommender':
     with st.spinner(text="Loading data..."):
         df = load_data()
+
         st.image('./pics/carnegie-hero-banner.jpg', caption='Source: https://www.oracle.com/customers/carnegie-mellon/')
         st.markdown(
             """<h1 style='text-align: left!important; color: black;'> University Matcher """, unsafe_allow_html=True)
@@ -107,6 +106,7 @@ if add_selectbox == 'University Recommender':
             suit you, dig deeper into demographics and financial information, and understand factors that
             contribute to a good return-on-investment.<br>""", unsafe_allow_html=True)
         st.markdown("<h6 style='text-align: left; color: #474c54'> Find the right college for you!", unsafe_allow_html=True)
+
 
         # widget layout/setup
         col1, col2, col3 = st.columns(3)
@@ -215,6 +215,7 @@ if add_selectbox == 'University Recommender':
                                 value_vars=['UGDS_WOMEN', 'UGDS_MEN'],
                                 value_name='ScoreValue',
                                 var_name='Scores')
+
             melted_df['Scores'] = melted_df['Scores'].apply(lambda x: 'WOMEN' if x == 'UGDS_WOMEN' else 'MEN')
             melted_df['INSTNM'] = melted_df['INSTNM'].apply(lambda x: x.strip())
 
