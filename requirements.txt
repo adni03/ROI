@@ -4,3 +4,4 @@ numpy
 vega_datasets
 shap
 streamlit-shap
+matplotlib
