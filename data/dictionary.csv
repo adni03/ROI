@@ -1,0 +1,73 @@
+Name,Definition
+ZIP,ZIP Code for the university
+UNITID,Unit ID for institution
+INSTNM,Institution name
+UGDS,Enrollment of undergraduate certificate/degree-seeking students
+UGDS_WHITE,Total share of enrollment of undergraduate degree-seeking students who are white
+UGDS_BLACK,Total share of enrollment of undergraduate degree-seeking students who are black
+UGDS_HISP,Total share of enrollment of undergraduate degree-seeking students who are Hispanic
+UGDS_ASIAN,Total share of enrollment of undergraduate degree-seeking students who are Asian
+UGDS_AIAN,Total share of enrollment of undergraduate degree-seeking students who are American Indian/Alaska Native
+UGDS_NHPI,Total share of enrollment of undergraduate degree-seeking students who are Native Hawaiian/Pacific Islander
+UGDS_2MOR,Total share of enrollment of undergraduate degree-seeking students who are two or more races
+UGDS_NRA,Total share of enrollment of undergraduate degree-seeking students who are non-resident aliens
+UGDS_UNKN,Total share of enrollment of undergraduate degree-seeking students whose race is unknown
+PCTFLOAN,Percent of all undergraduate students receiving a federal student loan
+CDR3,Three-year cohort default rate
+UGDS_MEN,Total share of enrollment of undergraduate degree-seeking students who are men
+UGDS_WOMEN,Total share of enrollment of undergraduate degree-seeking students who are women
+LPSTAFFORD_CNT,Number of borrowers with outstanding federal Direct Loan balances
+LPSTAFFORD_AMT,Total outstanding federal Direct Loan balance
+PCIP01,Percentage of degrees awarded in Agriculture
+PCIP03,Percentage of degrees awarded in Natural Resources And Conservation.
+PCIP04,Percentage of degrees awarded in Architecture And Related Services.
+PCIP05,"Percentage of degrees awarded in Area, Ethnic, Cultural, Gender, And Group Studies."
+PCIP09,"Percentage of degrees awarded in Communication, Journalism, And Related Programs."
+PCIP10,Percentage of degrees awarded in Communications Technologies/Technicians And Support Services.
+PCIP11,Percentage of degrees awarded in Computer And Information Sciences And Support Services.
+PCIP12,Percentage of degrees awarded in Personal And Culinary Services.
+PCIP13,Percentage of degrees awarded in Education.
+PCIP14,Percentage of degrees awarded in Engineering.
+PCIP15,Percentage of degrees awarded in Engineering Technologies And Engineering-Related Fields.
+PCIP16,"Percentage of degrees awarded in Foreign Languages, Literatures, And Linguistics."
+PCIP19,Percentage of degrees awarded in Family And Consumer Sciences/Human Sciences.
+PCIP22,Percentage of degrees awarded in Legal Professions And Studies.
+PCIP23,Percentage of degrees awarded in English Language And Literature/Letters.
+PCIP24,"Percentage of degrees awarded in Liberal Arts And Sciences, General Studies And Humanities."
+PCIP25,Percentage of degrees awarded in Library Science.
+PCIP26,Percentage of degrees awarded in Biological And Biomedical Sciences.
+PCIP27,Percentage of degrees awarded in Mathematics And Statistics.
+PCIP29,Percentage of degrees awarded in Military Technologies And Applied Sciences.
+PCIP30,Percentage of degrees awarded in Multi/Interdisciplinary Studies.
+PCIP31,"Percentage of degrees awarded in Parks, Recreation, Leisure, And Fitness Studies."
+PCIP38,Percentage of degrees awarded in Philosophy And Religious Studies.
+PCIP39,Percentage of degrees awarded in Theology And Religious Vocations.
+PCIP40,Percentage of degrees awarded in Physical Sciences.
+PCIP41,Percentage of degrees awarded in Science Technologies/Technicians.
+PCIP42,Percentage of degrees awarded in Psychology.
+PCIP43,"Percentage of degrees awarded in Homeland Security, Law Enforcement, Firefighting And Related Protective Services."
+PCIP44,Percentage of degrees awarded in Public Administration And Social Service Professions.
+PCIP45,Percentage of degrees awarded in Social Sciences.
+PCIP46,Percentage of degrees awarded in Construction Trades.
+PCIP47,Percentage of degrees awarded in Mechanic And Repair Technologies/Technicians.
+PCIP48,Percentage of degrees awarded in Precision Production.
+PCIP49,Percentage of degrees awarded in Transportation And Materials Moving.
+PCIP50,Percentage of degrees awarded in Visual And Performing Arts.
+PCIP51,Percentage of degrees awarded in Health Professions And Related Programs.
+PCIP52,"Percentage of degrees awarded in Business, Management, Marketing, And Related Support Services."
+PCIP54,Percentage of degrees awarded in History.
+PredominantDegree,Predominant degree at the institution.
+HighestDegree,Highest degree offered by the institution.
+FundingModel,Public or Private institution.
+Region,Region where the institution is located.
+Geography,Size of the city where the institution is located.
+AdmissionRate,Admission Rate of the institution.
+ACTMedian,Median ACT score at the institution.
+SATAverage,Average SAT score at the institution.
+AverageCost,Average tuition for the institution.
+Expenditure,Average living and other costs at the institution.
+AverageFacultySalary,Average faculty salary at the institution.
+MedianDebt,Median debt for students at the institution.
+AverageAgeofEntry,Average age of students joining the institution.
+MedianFamilyIncome,Median family income of students at the institution.
+MedianEarnings,Median earnings after students graduate from the institution.

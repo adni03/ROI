@@ -3,6 +3,9 @@ import pandas as pd
 import altair as alt
 import models.recommender as CollegeRecommender
 from vega_datasets import data
+import models.roi_predictor_v2 as ROI
+import shap
+from streamlit_shap import st_shap
 
 
 @st.cache
@@ -15,7 +18,7 @@ st.set_page_config(layout='wide', page_title='University MatchMaker')
 add_selectbox = st.sidebar.selectbox('Select a view to explore:',
                                      ('University Recommender',
                                       'Explore Universities',
-                                      'University ROI'))
+                                      'University ROI Analysis'))
 
 # Method to transform data frame for degree bar chart
 def get_degree_df(df, *filter):
@@ -52,7 +55,6 @@ def get_degree_df(df, *filter):
     fos = fos.rename(columns=dict(zip(fos.columns.tolist(), degrees))).T
     fos = fos.T.reset_index()
     fos = pd.melt(fos, id_vars=['INSTNM'])
-    print(fos)
     return fos
 
 
@@ -93,40 +95,41 @@ def get_gender_df(df, *filter):
 ## and for the top degrees by proportion of students in those schools.
 
 if add_selectbox == 'University Recommender':
-    with st.spinner(text="Loading data..."):
-        df = load_data()
 
-        st.image('./pics/carnegie-hero-banner.jpg', caption='Source: https://www.oracle.com/customers/carnegie-mellon/')
-        st.markdown(
-            """<h1 style='text-align: left!important; color: black;'> University Matcher """, unsafe_allow_html=True)
-        st.markdown(
-            """<p style='text-align: left; color: #474c54'> University Matcher helps you get started on your
-            college applications by <b>recommending universities</b>, <b>providing comparisons</b> and an
-            expected <b>return-on-investment</b> for your education. Here you can find universities that
-            suit you, dig deeper into demographics and financial information, and understand factors that
-            contribute to a good return-on-investment.<br>""", unsafe_allow_html=True)
-        st.markdown("<h6 style='text-align: left; color: #474c54'> Find the right college for you!", unsafe_allow_html=True)
+    df = load_data()
+
+    st.image('./pics/carnegie-hero-banner.jpg', caption='Source: https://www.oracle.com/customers/carnegie-mellon/')
+    st.markdown(
+        """<h1 style='text-align: left!important; color: black;'> University Matcher """, unsafe_allow_html=True)
+    st.markdown(
+        """<p style='text-align: left; color: #474c54'> University Matcher helps you get started on your
+        college applications by <b>recommending universities</b>, <b>providing comparisons</b> and an
+        expected <b>return-on-investment</b> for your education. Here you can find universities that
+        suit you, dig deeper into demographics and financial information, and understand factors that
+        contribute to a good return-on-investment.<br>""", unsafe_allow_html=True)
+    st.markdown("<h6 style='text-align: left; color: #474c54'> Find the right college for you!", unsafe_allow_html=True)
 
 
-        # widget layout/setup
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            sat_score_val = int(st.text_input('SAT Score', '1400'))
-        with col2:
-            act_score_val = int(st.text_input('ACT Score', '32'))
-        with col3:
-            funding_options = ['Private', 'Public']
-            funding_sel = st.multiselect('Funding Model', funding_options)
+    # widget layout/setup
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        sat_score_val = int(st.text_input('SAT Score', '1400'))
+    with col2:
+        act_score_val = int(st.text_input('ACT Score', '32'))
+    with col3:
+        funding_options = ['Private', 'Public']
+        funding_sel = st.multiselect('Funding Model', funding_options)
 
-        region_options = df['Region'].unique()
-        region_sel = st.multiselect('Select region', region_options)
+    region_options = df['Region'].unique()
+    region_sel = st.multiselect('Select region', region_options)
 
-        values = st.slider(
-            'Select a range for tuition',
-            2000, 100000, (5000, 55000))
+    values = st.slider(
+        'Select a range for tuition',
+        2000, 100000, (5000, 55000))
 
-        # When clicked...
-        if st.button('Find a Match!'):
+    # When clicked...
+    if st.button('Find a Match!'):
+        with st.spinner(text="Generating recommendations..."):
             # Get recommendations (right now trained on act_score adn sat_score on filtered dataset,
             # but working to train on all user input w/ dim reduction so that we can consistently
             # output the top 10 - some of the filters reduce training set drastically s.t. there are
@@ -180,7 +183,7 @@ if add_selectbox == 'University Recommender':
                                   , inplace=True)
                 st.dataframe(display_df)
 
-            with st.expander('How we calculate the Best Fit Score'):
+            with st.expander('How we calculate the Best Fit Score', expanded=True):
                 st.markdown(
                     """<p style='text-align: left; color: #474c54'> We take into consideration your funding 
                 and location preferences first and find universities that satisfy those criteria. Next, we look at the
@@ -189,10 +192,8 @@ if add_selectbox == 'University Recommender':
                 the sum of the inverted distances to arrive at the Best Fit Score.""",
                     unsafe_allow_html=True)
 
-            st.markdown(
-                """<p style='text-align: left; color: #474c54'> Shift+Click on the bars below to compare the Gender 
-                 composition and Total Expense between universities.""",
-                unsafe_allow_html=True)
+            st.info("""Shift+Click on the bars below to compare the Gender composition and Total Expense between universities.""")
+            st.write()
 
             college_filter = alt.selection_multi(fields=['INSTNM'])
 
@@ -248,7 +249,7 @@ if add_selectbox == 'University Recommender':
             )
             charts
 
-            st.subheader("About your Best Fit University:")
+            st.subheader(f"About your Best Fit University: {admrate_df['INSTNM'][0]}")
             school_sel = admrate_df['INSTNM'][0]
             masked_df = df[df['INSTNM'] == school_sel]
             st.markdown(
@@ -284,7 +285,8 @@ if add_selectbox == 'University Recommender':
 if add_selectbox == 'Explore Universities':
     df = load_data()
     st.image('./pics/carnegie-hero-banner.jpg', caption='Source: https://www.oracle.com/customers/carnegie-mellon/')
-    st.subheader("Explore a Specific University")
+    st.markdown(
+        """<h1 style='text-align: left!important; color: black;'> Explore a Specific University """, unsafe_allow_html=True)
 
     # drop-down to select school
     school_options = df['INSTNM']
@@ -317,7 +319,8 @@ if add_selectbox == 'Explore Universities':
     col4.metric("Median Debt (Post-Graduation)", '$' + str(int(masked_df.MedianDebt)))
     col5.metric("Median Earnings (Post-Graduation)", '$' + str(int(masked_df.MedianEarnings)))
 
-    # Create Demographic Visualizations (can't make this interactive with the given design because the data is already aggregated
+    # Create Demographic Visualizations (can't make this interactive with the given design because the data is
+    # already aggregated
     st.markdown(f"""<h5 style='text-align: left; color: black'>DYNAMIC VISUALIZATIONS</h5>""", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
 
@@ -366,3 +369,102 @@ if add_selectbox == 'Explore Universities':
 
     col2.write('\n')
     col2.write(gender_pie)
+
+# PART 3: ROI Analysis
+
+if add_selectbox == 'University ROI Analysis':
+    st.image('./pics/carnegie-hero-banner.jpg', caption='Source: https://www.oracle.com/customers/carnegie-mellon/')
+    st.markdown(
+        """<h1 style='text-align: left!important; color: black;'> What Impacts your ROI? """, unsafe_allow_html=True)
+    st.markdown(
+        """<p style='text-align: left; color: #474c54'> Most students attend college in order to get a better job 
+        with a higher salary. But the <b>financial returns</b> to college vary widely depending on the <b>institution</b> a student 
+        attends and the <b>subject</b> they study. While prospective students often ask themselves whether college is 
+        worth it, the more important questions are how they can make college worth it and <b> what factors affect the return
+        on their investment.</b> Here, we give you a more comprehensive analysis based on <b>SHAP or
+        SHapley Additive Explanations. </b>""", unsafe_allow_html=True)
+
+    st.subheader('Relative Variable Importance')
+    st.markdown(
+        """<p style='text-align: left; color: #474c54'> The Relative variable importance graph plots the independent variables 
+        <b>in order of their effect</b> on the return on investment on education <b>across all universities</b>. 
+        We consider the <b>earnings after graduation</b> as the measure of return on investment. The variable with the 
+        highest score is set as the most important variable, and the other variables follow in order of importance.""",
+        unsafe_allow_html=True)
+
+    st.markdown(
+        """<p style='text-align: left; color: #474c54'> For this analysis, the following plot communicates the factors
+        you should consider to <b>maximize</b> the return on your investment.""", unsafe_allow_html=True)
+
+    roi = ROI.ROIAnalyzer()
+    with st.spinner(text="Calculating importance values..."):
+        roi.train_analyzer()
+
+        rel_feat_col1, _, _ = st.columns(3)
+        with rel_feat_col1:
+            num_feats = st.slider('Select the number of factors to view', 0, 30, 10)
+
+        feature_imp = roi.get_feature_importance(num_feats)
+        feature_imp.sort_values(by=['Importance'], ascending=False, inplace=True)
+
+        rel_imp_barchart = alt.Chart(feature_imp,
+                                     height=30*num_feats,
+                                     width=800,
+                                  title='Relative Variable Importance for Earnings post graduation').mark_bar().encode(
+            x=alt.X('Importance', title="Relative Importance"),
+            y=alt.Y('Feature', title="Variable", sort='-x'),
+            tooltip=[alt.Tooltip('Importance:Q', title='Value'),
+                     alt.Tooltip('Description:N', title='Description')]
+        )
+        _, rel_imp_col, _ = st.columns((1, 8, 1))
+        with rel_imp_col:
+            st.altair_chart(rel_imp_barchart)
+
+    st.markdown(
+        f"""<p style='text-align: left; color: #474c54'> The plot displays the <i>top {num_feats} factors</i> and their 
+        corresponding importance. The most important factor to consider is <b>{feature_imp.iloc[0, 0]}</b>, which is 
+        <b>{feature_imp.iloc[0, 2]}</b>. Hover over each bar to view the value and the variable's description."""
+        , unsafe_allow_html=True)
+
+    st.subheader('Variable Importance for individual universities')
+
+    st.markdown(
+        """<p style='text-align: left; color: #474c54'> The above importance values tell us what factors contribute to 
+        a high income post graduation across all universities. To dig a little deeper, we will use <b>SHapley Additive
+        Explanations.</b> Force plots show us exactly which variables had the most influence on the return on investment
+        for a <b>particular university.</b>""",
+        unsafe_allow_html=True)
+
+    st.markdown(
+        """<p style='text-align: left; color: #474c54'> For this analysis, please select a university you would like to
+        look into and the variables for which you would like a description.""", unsafe_allow_html=True)
+
+    with st.form('shap'):
+        shap_col1, shap_col2 = st.columns(2)
+        with shap_col1:
+            # drop-down to select school
+            shap_school_sel = st.selectbox('Type or select a school', roi.college_names)
+            submitted = st.form_submit_button('View Force Plot')
+        with shap_col2:
+            # drop-down to view variable defs
+            var_sel = st.multiselect('Type or select a variable to view its description', roi.dictionary['Name'],
+                                     default='CDR3')
+            st.table(roi.dictionary[roi.dictionary['Name'].isin(var_sel)].reset_index(drop=True))
+        if submitted:
+            expected_value, shap_values, X = roi.get_local_importance(shap_school_sel)
+            shap_chart = shap.force_plot(expected_value, shap_values, X)
+            st_shap(shap_chart)
+
+    st.markdown("""<p style='text-align: left; color: black; font-size: 20px'> Interpreting the plot:
+    <ul>
+        <li>The axis scale represents the earnings value scale and the predicted value is in <b>bold</b> font</li>
+        <li>The variables in <b>red</b> contribute positively to the earnings</li>
+        <li>The variables in <b>blue</b> contribute negatively to the earnings</li>
+        <li>The size of the block represents how large of a contribution the variable makes to the final predicted earnings</li>
+        <li>The value under the block is in the same scale as the axis</li>
+        <li>Mouse over smaller blocks to view the contribution that variable made to the predicted earnings</li>
+    </ul>
+    
+    From this plot, for a particular university, we observe factors that influence the return on investment for students
+    studying/looking to study there. 
+    """, unsafe_allow_html=True)
