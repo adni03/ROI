@@ -1,6 +1,6 @@
 # CMU Interactive Data Science Final Project
 
-* **Online URL**: TODO
+* **Online URL**: https://cmu-ids-fall-2022-final-project-roi-collegematcher-ngipmw.streamlit.app/
 * **Team members**:
   * Contact person: snittala@andrew.cmu.edu
   * abytha@andrew.cmu.edu
