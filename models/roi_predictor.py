@@ -92,13 +92,13 @@ def trainingSplit(df):
     x_test = df_test
     return x_train,y_train,x_test,y_test
 
-def scaleFeatures(x_train,x_test):
+def scaleFeatures(x_train, x_test):
     train_cols = x_train.columns
     scaler = StandardScaler()
     x_train = pd.DataFrame(scaler.fit_transform(x_train), columns=train_cols)
     test_cols = x_test.columns
     x_test = pd.DataFrame(scaler.fit_transform(x_test), columns=test_cols)
-    return x_train,x_test
+    return x_train, x_test
 
 def removeStrings(df):
     return df.drop(df.select_dtypes(['object']).columns,axis=1)
@@ -136,11 +136,11 @@ scorecard_working["ROI"] = np.ceil(10*12*scorecard_working["AverageCost"]/scorec
 
 # clean 
 scorecard_working = cleanNaN(scorecard_working)
-scorecard_working = scorecard_working.drop(["AverageCost","ACTMedian","CONTROL"], axis=1) # drop ACT because not as precise as SAT
-
-# show correlation matrix of all columns
-corr = showCorrelationMatrix(scorecard_working)
-scorecard_working = dropCollinear(scorecard_working, corr)
+# scorecard_working = scorecard_working.drop(["AverageCost","ACTMedian","CONTROL"], axis=1) # drop ACT because not as precise as SAT
+#
+# # show correlation matrix of all columns
+# corr = showCorrelationMatrix(scorecard_working)
+# scorecard_working = dropCollinear(scorecard_working, corr)
 
 # reduce to features for LM
 featureList = ["MedianFamilyIncome","SATAverage","AverageFacultySalary","AverageAgeofEntry","ROI"]
