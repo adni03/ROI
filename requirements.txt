@@ -1,0 +1,6 @@
+sklearn
+pandas
+numpy
+vega_datasets
+shap
+streamlit-shap
