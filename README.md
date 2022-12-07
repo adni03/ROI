@@ -10,7 +10,7 @@
 ## University Matcher
 
 <p align="center">
-  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/info2.PNG?raw=true" alt="Our Application"/>
+  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/application.png?raw=true" alt="Our Application"/>
 </p>
 
 ## Work distribution
