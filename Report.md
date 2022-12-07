@@ -71,7 +71,7 @@ A nuance here is that from our analysis we observed that the SAT and ACT scores 
 
 #### Best Fit Score:
 Intuitively, the higher the score, the better chance a student has to get accepted to a university. We calculate the Best Fit Score from the distances obtained from the model as follows:
-$$ Score\; S_i = \frac{\frac{1}{d_i}}{\sum_{i=1}^{n}\frac{1}{d_i}}*100$$
+$ Score\; S_i = \frac{\frac{1}{d_i}}{\sum_{i=1}^{n}\frac{1}{d_i}}*100$
 Where, 
 - `n`: top-n universities
 - `d`: distance calculated in the above section
