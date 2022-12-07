@@ -7,7 +7,7 @@
   * bredmond@andrew.cmu.edu
   * dulam@andrew.cmu.edu
 * **Video link**: TODO
-* **Final report**: [project report](Report.md)
+* **Final report**: [Report](Report.md)
 
 ## University Matcher
 
@@ -27,16 +27,16 @@ We believe that our application could provide students a better picture of where
 
 The work was split among the team members in the following manner:
 * Aditya Nittala:
- * University recommender model
- * ROI visualizations 
+  * University recommender model
+  * ROI visualizations 
 * Anjana Bytha: 
- * College Matcher dashboard
- * Visualizations for university comparisons 
+  * College Matcher dashboard
+  * Visualizations for university comparisons 
 * Brittany Redmond:
- * Visualizations for a specific university
+  * Visualizations for a specific university
 * Devin Ulam:
- * ROI model 
- * ROI visualizations
+  * ROI model 
+  * ROI visualizations
 
 ## Deliverables
 
