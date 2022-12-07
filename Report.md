@@ -1,7 +1,8 @@
 # Final Project Report
 
 **Project URL**: https://cmu-ids-fall-2022-final-project-roi-collegematcher-ngipmw.streamlit.app/
-**Video URL**: https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/application.png?raw=true
+
+**Video URL**: TODO
 
 
 ## Introduction
