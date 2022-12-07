@@ -55,6 +55,7 @@ def get_degree_df(df, *filter):
     fos = fos.rename(columns=dict(zip(fos.columns.tolist(), degrees))).T
     fos = fos.T.reset_index()
     fos = pd.melt(fos, id_vars=['INSTNM'])
+    fos['value'] = round(fos['value'] * 100, 2)
     return fos
 
 
@@ -74,6 +75,7 @@ def get_race_df(df, *filter):
     race_df = race_df.rename(columns=dict(zip(race_df.columns.tolist(), races))).T
     race_df = race_df.T.reset_index()
     race_df = pd.melt(race_df, id_vars=['INSTNM'])
+    race_df['value'] = round(race_df['value'] * 100, 2)
     return race_df
 
 
@@ -86,6 +88,7 @@ def get_gender_df(df, *filter):
     gender_df = gender_df.rename(columns=dict(zip(gender_df.columns.tolist(), ['Men', 'Women']))).T
     gender_df = gender_df.T.reset_index()
     gender_df = pd.melt(gender_df, id_vars=['INSTNM'])
+    gender_df['value'] = round(gender_df['value'] * 100, 2)
     return gender_df
 
 
@@ -134,6 +137,16 @@ if add_selectbox == 'University Recommender':
             # but working to train on all user input w/ dim reduction so that we can consistently
             # output the top 10 - some of the filters reduce training set drastically s.t. there are
             # only 4 schools total being trained on.)
+
+            if (len(funding_sel) == 0):
+                print('here ' ,funding_sel)
+                funding_sel = ['Private', 'Public']
+
+            if (len(region_sel) == 0):
+                region_sel = region_options
+            
+            print('here out ' ,funding_sel)
+            print('here out ' ,region_sel)
 
             rec = CollegeRecommender.Recommender(region=region_sel, sat_score=sat_score_val,
                                                  act_score=act_score_val, funding_type=funding_sel,
@@ -322,15 +335,14 @@ if add_selectbox == 'Explore Universities':
     # Create Demographic Visualizations (can't make this interactive with the given design because the data is
     # already aggregated
     st.markdown(f"""<h5 style='text-align: left; color: black'>DYNAMIC VISUALIZATIONS</h5>""", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
 
     # create gender pie chart
     gender_pie = alt.Chart(get_gender_df(masked_df),
                            title='Percentage by Gender',
-                           width=350
+                           width=250
                            ).mark_arc().encode(
         theta=alt.Theta(field="value", type="quantitative"),
-        color=alt.Color(field="variable", type="nominal"),
+        color=alt.Color(field="variable", scale=alt.Scale(scheme='paired'), type="nominal"),
         tooltip=[alt.Tooltip('value', title="Proportion")]
     )
     # creat degree bar chart
@@ -349,10 +361,10 @@ if add_selectbox == 'Explore Universities':
 
     # crete gender bar chart
     race_barchart = alt.Chart(get_race_df(masked_df),
-                              title='Proportion by degree ',
+                              title='Proportion by Race ',
                               width=600).mark_bar(
         tooltip=True).encode(
-        y=alt.Y('variable', title="Degree Type", sort='-x'),
+        y=alt.Y('variable', title="Race", sort='-x'),
         x=alt.X('value', title="Proportion"),
         # if want to make a separate
         # color='variable',
@@ -362,13 +374,33 @@ if add_selectbox == 'Explore Universities':
         alt.datum.rank <= 10).configure_legend(columns=2, orient='bottom')
 
     # write visualizations to UI (feel free to update format)
-    col1.write('\n')
-    col1.write(degree_select_barchart)
-    col1.write('\n')
-    col1.write(race_barchart)
+    
+    col1, col2 = st.columns([2, 1])
 
-    col2.write('\n')
-    col2.write(gender_pie)
+    with col1:
+        df = get_degree_df(masked_df).sort_values(by = ['value'], ascending=False)
+        max_degree = df.values.tolist()[0]
+        st.markdown(f"""<p style='text-align: left; color: black;'> The top 10 degrees at {school_sel} are as shown below.\
+            The degree with the highest proportion is <strong>{max_degree[1]}</strong> with a proportion of \
+                <strong>{max_degree[2]}%</strong> of the total degrees awarded. Hover over each bar to see the percentage \
+                of the degree.""", unsafe_allow_html=True)
+        col1.write('\n')
+        col1.write(degree_select_barchart)
+        col1.write('\n')
+        df_race = get_race_df(masked_df).sort_values(by = ['value'], ascending=False)
+        max_race = df_race.values.tolist()[0]
+        st.markdown(f"""<p style='text-align: left; color: black;'> The proportion of different races at {school_sel} are \
+            as shown below. The race with the highest percentage is <strong>{max_race[1]}</strong> with a proportion of \
+                <strong>{max_race[2]}%</strong> of the total student population. Hover over each bar to see the percentage \
+                of each race.""", unsafe_allow_html=True)
+        col1.write(race_barchart)
+
+    with col2:
+        df = get_gender_df(masked_df)
+        st.markdown(f"""<p style='text-align: left; color: black;'> Men make up <strong>{df['value'][0]}% </strong> and women make up \
+            <strong>{df['value'][1]}%</strong> of the student population at {school_sel}""",
+                unsafe_allow_html=True)
+        col2.write(gender_pie)
 
 # PART 3: ROI Analysis
 
