@@ -6,6 +6,8 @@
   * abytha@andrew.cmu.edu
   * bredmond@andrew.cmu.edu
   * dulam@andrew.cmu.edu
+* **Video link**: TODO
+* **Final report**: [project report](Report.md)
 
 ## University Matcher
 
@@ -19,9 +21,22 @@ Furthermore, most students attend college in order to get a better job with a hi
 
 We believe that our application could provide students a better picture of where they stand in terms of academic requirements and student life expectations. The university recommendations could be a starting point, from which they can make further enquiries and choose schools that work best for them. We also provide an analysis on factors that influence their return on investment on the whole and specific univerity wise.
 
+----
+
 ## Work distribution
 
-Work for the project was divided equally among the team members. 
+The work was split among the team members in the following manner:
+* Aditya Nittala:
+ * University recommender model
+ * ROI visualizations 
+* Anjana Bytha: 
+ * College Matcher dashboard
+ * Visualizations for university comparisons 
+* Brittany Redmond:
+ * Visualizations for a specific university
+* Devin Ulam:
+ * ROI model 
+ * ROI visualizations
 
 ## Deliverables
 
