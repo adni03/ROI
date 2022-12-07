@@ -17,6 +17,8 @@ Our application provides students with a dashboard that helps personalize their 
 * What universities are best fit for me?
 * What university-level characteristics influence my ROI?
 
+To produce these insights, we use the [College Scorecard](https://collegescorecard.ed.gov/data/) dataset which contains historical data for universities from the years 1996-2021[3]. The data for each year consists of several university level factors and demographic variables of the student population at the university. 
+
 ## Related Work
 
 ## Methods
