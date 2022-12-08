@@ -72,7 +72,7 @@ A nuance here is that from our analysis we observed that the SAT and ACT scores 
 #### Best Fit Score:
 Intuitively, the higher the score, the better chance a student has to get accepted to a university. We calculate the Best Fit Score from the distances obtained from the model as follows:
 ```math
-Score\; S_i = \frac{\frac{1}{d_i}}{\sum_{i=1}^{n} \frac{1}{d_i}}*100
+    Score\; S_i = \frac{\frac{1}{d_i}}{\sum_{i=1}^{n}\frac{1}{d_i}}*100
 ```
 Where, 
 - `n`: top-n universities
@@ -81,14 +81,32 @@ Where,
 We order the universities on this score and present it to the user in the dashboard in the form of a table and a barplot showing the score.
 
 ### Return on Investment Analyzer:
+Our feature set consists of 74 columns that talk about demographics like gender and race, the percentage of degrees a university awarded program wise, admission rate, etc. To understand how these factors influence the post-graduation earnings, we trained a machine learning model - RandomForest [6] to model the relationship between these features and the earnings column.
 
-### Choice of Visualizations:
+We then used the calculated feature importance from within the Sci-kit learn implementation of the algorithm and SHAP (SHapley Additive exPlanations) [7] to produce insights about the features that have a significant effect on the predicted income. The following steps were followed:
+- Modeling
+- Interpretation
+
+#### Interpretability:
+An important component of our application is the analysis we provide on ROI. This links well to interpretability in machine learning. SHAP is a method that explains how individual predictions are made by a machine learning algorithm. This technique deconstructs a prediction into a sum of contributions from each of the model’s input variables [8]. 
+
+The output of SHAP is a matrix of numbers that has the same dimensions as the input data, where these numbers are SHAP values. The output of the model can be reproduced as the sum of these SHAP values and a base value. This base value is the mean of the model output across the dataset. Crucially, for our application, SHAP gives us how much contribution each feature made to prediction the post-graduation income on a university level bases. For a more general overview, the `feature_importance_` attributed provided by Sci-kit learn enables us to identify factors across all universities.
 
 ## Results
 
 ## Discussion
+The process of applying to universities is a laborious process that involves multiple time consuming steps of which the first is shortlisting colleges. Students and their parents have to carefully consider a variety of factors such as university ranking, location, tuition cost, financial aid, campus life, safety, etc. while looking for universities. This task is a large undertaking considering the number of colleges in the United States. With our project, we aimed to decrease the effort required to shortlist institutions by providing personalized recommendations, university level and demographic information, and a comprehensive analysis of the factors that a student should consider to maximize their return on investment.
+
+Our recommendations dashboard solves one half of the problem by listing universities that are best fit for a student. We provide information on the best fit college and enable the user to compare the top recommended universities. Next, by analyzing the SHAP values and feature importance values from the RandomForest model, we generated a few insights. Firstly, in a more general sense, the percentage of degrees awarded in Engineering, the tuition cost, the percentage of degrees awarded in Healthcase for a university greatly influence the post-graduation income. It is interesting to note that the student’s family income also plays a part in the final return on investment. Looking at each university, we produced an illustration that displays how different factors (which are unique to each university to a certain degree) increase and decrease the post-graduation income.
 
 ## Future Work
+The College Scorecard dataset is an exhaustive dataset that contains a whole lot of information. The sheer size of the dataset poses a problem when it comes to preprocessing. The first step in extending this application is to include student retention, demographics, financial and academic data from multiple years. Due to time and resource constraints, we were only able to preprocess data from 2019. In the future, we will be able to provide richer insights into universities.
+
+Next, a by product of deeper data cleaning is that we can utilize the full range of data available (from 1996 till present) to develop a more robust recommendation algorithm that is trained on historical data. In its current form, the algorithm makes predictions based on one year’s worth of data, limiting the rank accuracy. 
+
+Lastly, we will be able to provide an over-the-years analysis for both university level features and demographics, describing how factors like gender make up, tuition fees, admission rates, etc. have changed for a particular university over time. 
+
+Since most college recommender websites base their lists off of the College Scorecard dataset, we believe that our application has the potential to help students curate a list of universities that truly suit them best without the pay-walls.
 
 ## References:
 [1] The NCES Fast Facts Tool provides quick answers to many education questions (National Center for Education Statistics). National Center for Education Statistics (NCES) Home Page, a part of the U.S. Department of Education. (n.d.). Retrieved November 1, 2022, from https://nces.ed.gov/fastfacts/display.asp?id=51
@@ -100,4 +118,3 @@ We order the universities on this score and present it to the user in the dashbo
 [4] Ranking 4,500 Colleges by ROI (2022) - CEW Georgetown. (n.d.). CEW Georgetown. Retrieved December 7, 2022, from https://cew.georgetown.edu/cew-reports/roi2022/
 
 [5] MacQueen, J. (1967) Some Methods for Classification and Analysis of Multivariate Observations. Proceedings of the 5th Berkeley Symposium on Mathematical Statistics and Probability, 1, 281-297.
-
