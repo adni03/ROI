@@ -27,15 +27,21 @@ We believe that our application could provide students a better picture of where
 
 The work was split among the team members in the following manner:
 * Aditya Nittala:
+  * EDA and Data Cleaning
   * University recommender model
   * ROI visualizations 
 * Anjana Bytha: 
+  * EDA
   * College Matcher dashboard
   * Visualizations for university comparisons 
 * Brittany Redmond:
+  * EDA
   * Visualizations for Explore a university
+  * Dashboard edits
 * Devin Ulam:
+  * EDA 
   * ROI model 
+  * Project Coordination
 
 ## Deliverables
 
