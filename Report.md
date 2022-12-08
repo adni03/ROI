@@ -123,20 +123,20 @@ We have a section that gives the university metrics for the best fit university 
 
 ### Explore Universities 
 
+The Explore Universities is a section which allows the users to get a deeper understanding of the universities. A specific university can be selected from a dropdown of the complete list of available universities. On selecting a specific university, the first section shows a detailed view of several parameters such as - admission rate, average SAT score, cost of attendance, expenditure, median earnings and others to give the student a better idea about the selected university.
+
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/explore_uni.gif?raw=true"/>
 </p>
 
-The Explore Universities is a section which allows the users to get a deeper understanding of the universities. A specific university can be selected from a dropdown of the complete list of available universities. On selecting a specific university, the first section shows a detailed view of several parameters such as - admission rate, average SAT score, cost of attendance, expenditure, median earnings and others to give the student a better idea about the selected university.
+#### Visualizations:
+The visualizations in this section include a bar chart that shows the top 10 degrees by proportion awarded at the institution showing what kind of degrees are awarded the most at a particular institute. This is useful to users who want to explore universities that have specializations in certain domains. We also show a pie chart displaying the percentages of men and women at the university. This is followed by a bar chart showing the distribution of races at the selected university. The intuition behind using bar charts is that they are the simplest and most easily interpretable forms of visualization. When looking at the proportions of degrees or the race distribution, the user gets a clear picture of the bird’s eye view without much effort or unraveling.
 
-<img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true" width="320"/> <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true" width="680"/>
+<img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true" width="680"/> <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true" width="320"/> 
 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/race.png?raw=true" width="675"/>
 </p>
-
-#### Visualizations:
-The visualizations in this section include a bar chart that shows the top 10 degrees by proportion awarded at the institution showing what kind of degrees are awarded the most at a particular institute. This is useful to users who want to explore universities that have specializations in certain domains. We also show a pie chart displaying the percentages of men and women at the university. This is followed by a bar chart showing the distribution of races at the selected university. The intuition behind using bar charts is that they are the simplest and most easily interpretable forms of visualization. When looking at the proportions of degrees or the race distribution, the user gets a clear picture of the bird’s eye view without much effort or unraveling.
 
 ### Return on Investment Section 
 The Return on Investment section is the most interesting part in our application. In addition to providing best fit recommendations to the students, we analyze the return on investment for universities. There are several factors which determine the return on investment for a specific university and in this section, we delve deeper into understanding how these factors impact it. Using machine learning, we generate a list of factors that contribute to higher median earnings. 
@@ -145,12 +145,14 @@ The Return on Investment section is the most interesting part in our application
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/global_imp.gif?raw=true"/>
 </p>
 
+#### Visualizations:
+The factors that influence ROI are displayed in a bar chart that shows the relative importance of each factor. The user can use a slider to change the number of factors which then updates the chart to show the selected number of factors. Understanding the relative importance of each of these factors provides important information to the students shortlisting colleges. The bar chart enables the student to understand how important a specific factor is and the weight they should give when they look for universities. We believe that by bringing to light the importance of factors seldom considered in university shortlisting, it opens up a new realm of possible university contenders. 
+
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/global_imp.png?raw=true"/>
 </p>
 
-#### Visualizations:
-The factors that influence ROI are displayed in a bar chart that shows the relative importance of each factor. The user can use a slider to change the number of factors which then updates the chart to show the selected number of factors. Understanding the relative importance of each of these factors provides important information to the students shortlisting colleges. The bar chart enables the student to understand how important a specific factor is and the weight they should give when they look for universities. We believe that by bringing to light the importance of factors seldom considered in university shortlisting, it opens up a new realm of possible university contenders. 
+To analyze these factors at a university level we provide the user with a force plot. Here, they can select a specific university from the dropdown which contains a list of all the universities. The visualization consists of a bar which shows how the features affect the median earnings (ROI), the features in red push the value to right making it higher, hence contributing to a better ROI where as the features in blue push the value to the left making it lower, hence driving a lesser ROI. It is interesting to note that for different universities, the factors that increase or decrease the ROI keep changing. 
 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/shap_1.gif?raw=true"/>
@@ -160,7 +162,6 @@ The factors that influence ROI are displayed in a bar chart that shows the relat
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/shap_2.gif?raw=true"/>
 </p>
 
-To analyze these factors at a university level we provide the user with a force plot. Here, they can select a specific university from the dropdown which contains a list of all the universities. The visualization consists of a bar which shows how the features affect the median earnings (ROI), the features in red push the value to right making it higher, hence contributing to a better ROI where as the features in blue push the value to the left making it lower, hence driving a lesser ROI. It is interesting to note that for different universities, the factors that increase or decrease the ROI keep changing. 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/force_plot.png?raw=true"/>
 </p>
