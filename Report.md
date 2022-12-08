@@ -129,7 +129,7 @@ We have a section that gives the university metrics for the best fit university 
 
 The Explore Universities is a section which allows the users to get a deeper understanding of the universities. A specific university can be selected from a dropdown of the complete list of available universities. On selecting a specific university, the first section shows a detailed view of several parameters such as - admission rate, average SAT score, cost of attendance, expenditure, median earnings and others to give the student a better idea about the selected university.
 
-<img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true" width="321"/> <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true" width="679"/>
+<img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true" width="320"/> <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true" width="680"/>
 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/race.png?raw=true" width="675"/>
