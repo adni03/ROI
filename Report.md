@@ -124,6 +124,19 @@ Explore Universities
 The Explore Universities is a section which allows the users to get a deeper understanding of the universities. A specific university can be selected from a dropdown of the complete list of available universities. On selecting a specific university, the first section shows a detailed view of several parameters such as - admission rate, average SAT score, cost of attendance, expenditure, median earnings and others to give the student a better idea about the selected university.
 
 The visualizations in this section include a bar chart that shows the top 10 degrees by proportion awarded at the institution showing what kind of degrees are awarded the most at a particular institute. This is useful to users who want to explore universities that have specializations in certain domains. We also show a pie chart displaying the percentages of men and women at the university. This is followed by a bar chart showing the distribution of races at the selected university. The intuition behind using bar charts is that they are the simplest and most easily interpretable forms of visualization. When looking at the proportions of degrees or the race distribution, the user gets a clear picture of the bird’s eye view without much effort or unraveling.
+
+<p align="center">
+  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/race.png?raw=true"/>
+</p>
+
+<p align="center">
+  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true"/>
+</p>
+
+<p align="center">
+  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true"/>
+</p>
+
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/explore_uni.gif?raw=true"/>
 </p>
@@ -142,6 +155,10 @@ The visualizations in this section include a bar chart that shows the top 10 deg
 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/shap_2.gif?raw=true"/>
+</p>
+
+<p align="center">
+  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/force_plot.png?raw=true"/>
 </p>
 
 ## Discussion
