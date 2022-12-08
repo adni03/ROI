@@ -155,6 +155,7 @@ if add_selectbox == 'University Recommender':
             whole_rec, uni_recs = rec.predict(df)
             # Note, I changed recommender.py s.t. it outputs the entire df and then index here for display
             admrate_df = uni_recs[:10]
+            print(admrate_df)
             # distance_scores = uni_recs[['INSTNM', 'SCORE']]
             admrate_df[['Score']] = admrate_df[['Score']].apply(lambda x: round(x, 2))
 
