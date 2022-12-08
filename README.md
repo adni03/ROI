@@ -33,10 +33,9 @@ The work was split among the team members in the following manner:
   * College Matcher dashboard
   * Visualizations for university comparisons 
 * Brittany Redmond:
-  * Visualizations for a specific university
+  * Visualizations for Explore a university
 * Devin Ulam:
   * ROI model 
-  * ROI visualizations
 
 ## Deliverables
 
