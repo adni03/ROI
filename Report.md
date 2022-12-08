@@ -152,7 +152,7 @@ The factors that influence ROI are displayed in a bar chart that shows the relat
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/global_imp.png?raw=true"/>
 </p>
 
-To analyze these factors at a university level we provide the user with a force plot. Here, they can select a specific university from the dropdown which contains a list of all the universities. The visualization consists of a bar which shows how the features affect the median earnings (ROI), the features in red push the value to right making it higher, hence contributing to a better ROI where as the features in blue push the value to the left making it lower, hence driving a lesser ROI. It is interesting to note that for different universities, the factors that increase or decrease the ROI keep changing. 
+The factors influencing ROI at a specific university change based on the university. To help students understand these factors better, we provide the user with a force plot. Here, they can select a specific university from the dropdown which contains a list of all the universities. In addition, there is a multi-select drop down to select different feature names which provide a description for selected features. Understanding the meaning of the features is an essential part in trying to uncover the impact of these features on the return on investment. 
 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/shap_1.gif?raw=true"/>
@@ -161,6 +161,8 @@ To analyze these factors at a university level we provide the user with a force 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/shap_2.gif?raw=true"/>
 </p>
+
+The visualization consists of a bar which shows how the features affect the median earnings (ROI), the features in red push the value to right making it higher, hence contributing to a better ROI where as the features in blue push the value to the left making it lower, hence driving a lesser ROI. It is interesting to note that for different universities, the factors that increase or decrease the ROI keep changing. On hovering over each of these features, it displays the proportion of relative impact that feature has in increasing or decreasing the ROI value. 
 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/force_plot.png?raw=true"/>
