@@ -23,7 +23,7 @@ Our application provides students with a dashboard that helps personalize their 
 To produce these insights, we use the [College Scorecard](https://collegescorecard.ed.gov/data/) dataset which contains historical data for universities from the years 1996-2021 [3]. The data for each year consists of several university level factors and demographic variables of the student population at the university. 
 
 ## Related Work
-Several college recommender websites like College Board's BigFuture, Cappex, College Search from The Princeton Review, etc. have gained popularity among students. These engines provide tools like Best Fit estimation, college comparisons, scholarship finders, etc., but are hidden behind pay-walls. Shortlisting universities is a taxing task on its own, and the variety of recommender engines adds further complexity to the process. Furthermore, most websites do not talk about return on investment and instead, focus on providing a comprehensive list of colleges.
+Several college recommender websites like College Board's BigFuture, Cappex, College Search from The Princeton Review, etc. have gained popularity among students. These engines provide tools like Best Fit estimation, college comparisons, and scholarship finders, but are hidden behind pay-walls. Shortlisting universities is a taxing task on its own, and the variety of recommender engines adds further complexity to the process. Furthermore, most websites do not talk about return on investment and instead, focus only on providing a comprehensive list of colleges.
 
 While an extensive list of universities is not a demerit, the amount of information displayed can easily overwhelm the student. More often than not, after the first ten universities, the recommendations are poorly matched and become more about quantity over quality. We serve as a springboard for refining university shortlists by being concise and producing only the top ten universities that best fit the student’s profile. 
 
@@ -47,7 +47,7 @@ The US Department of Education compiled information about various universities i
 * `COMPLETION`: Completion rate according to family income bracket, gender, etc.
 
 #### Categories/Features Selected:
-We filtered out a subset of the features available for our usecase. This selection was done in two ways. First, we looked at the comprehensive data dictionary provided by the dataset owners and compiled a list of features that at first glance seemed relevant and interesting to explore. These features belonged to the first eight categories in the above list. 
+We filtered out a subset of the features available for our use case. This selection was done in two ways. First, we looked at the comprehensive data dictionary provided by the dataset owners and compiled a list of features that at first glance that seemed relevant and interesting to explore. These features belonged to the first eight categories in the above list. 
 
 On performing exploratory analysis, we discovered that the data was quite messy and rather incomplete, with over half of the rows missing important data in some cases. To expand the set of working features, we looped through the features in the categories and identified ones with at most 20% missing data and added them to our working dataset. To compensate for the missing data in a few crucial features, we incorporated an additional source of data obtained from [GitHub](https://github.com/lux-org/lux-datasets/blob/master/data/college.csv). We also added latitude and longitude information for each of the universities obtained from a dataset that mapped ZIP codes to their corresponding values. With this, our tally of features came up to 74.
 
@@ -58,10 +58,10 @@ Our application uses machine learning techniques such as clustering and regressi
 - Score calculation
 
 #### Data Filtering:
-University recommendations are very sensitive to the preferences of the student and their academic profile. To take into consideration their choices, we ask the user to provide us their SAT and ACT scores, the types of university they are looking for, their regions of interest and the tuition range they are comfortable with. With these parameters, we filter out the data to obtain a list of universities that best match their criteria.
+University recommendations are very sensitive to the preferences of the student and their academic profile. To take into consideration their choices, we ask the user to provide us their SAT and ACT scores, the types of university they are looking for, their regions of interest and the tuition range they are comfortable with. With these parameters, we filter out the data to obtain a list of universities that best match their criteria. We realize that having the flexibility with these input parameters is quite important to the stakeholder which in our case are students.  
 
 #### Modeling:
-The over-arching approach we took was to cluster the universities into three groups based on scores and recommended universities from a cluster that best matched the student’s profile. The reasoning behind choosing three clusters was to segregate the universities into how difficult it would be for the student to get accepted: Easy, Medium and Hard. Given the student’s academic test scores, they will be assigned to a cluster and their recommendations come from universities that belong to this cluster.
+The overarching approach we took was to cluster the universities into three groups based on scores and recommended universities from a cluster that best matched the student’s profile. The reasoning behind choosing three clusters was to segregate the universities into how difficult it would be for the student to get accepted into: Easy, Medium and Hard. Given the student’s academic test scores, they will be assigned to a cluster and their recommendations come from universities that belong to this cluster.
 
 The algorithm of choice for this clustering is K-Means Clustering [5]. Given the filtered data, we train a k-means model and obtain the cluster labels for each of the universities. We then run the model on the scores submitted by the user to obtain a cluster assignment. This assignment is then used to identify the universities where students’ profile is most similar to the user. 
 
@@ -93,23 +93,36 @@ An important component of our application is the analysis we provide on ROI. Thi
 The output of SHAP is a matrix of numbers that has the same dimensions as the input data, where these numbers are SHAP values. The output of the model can be reproduced as the sum of these SHAP values and a base value. This base value is the mean of the model output across the dataset. Crucially, for our application, SHAP gives us how much contribution each feature made to prediction the post-graduation income on a university level bases. For a more general overview, the `feature_importance_` attributed provided by Sci-kit learn enables us to identify factors across all universities.
 
 ## Results
+The Application has three sections- best fit university recommendations based on user input for certain features, exploring different universities and analyzing the return on investment for universities. The application has been separated into these sections to allow for the users to have an immersive experience for each topic of interest. 
+
+University Matchmaker 
+The University Matchmaker has a section to take input from the user - SAT Score, ACT Score, Funding Model, Region and Tuition Cost to make recommendations based on the user’s choices. The Funding Model and Region allow for multiple selections to take into consideration the varied choice of every student. 
 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/rec_dashboard.gif?raw=true"/>
 </p>
 
+Visualizations:
+Once the user enters the parameters of interest and clicks on the button, the recommendations are displayed based on the best fit score calculations. We display a list of the universities alongside a US Map which has location pins with the recommended universities. The primary motivation for the design of the visualizations is to provide the user with an intuitive understanding of the results. By displaying the list of universities with the tuition vs earnings, it gives the student a snapshot of the return on investment. 
+
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/map_table.png?raw=true"/>
 </p>
 
+This visualization is followed by a bar chart showing the best fit scores for the recommended universities in a descending order focussing on the ones which are of best interest to the student based on their selections. Hovering over each of the bars gives a glimpse of the important details such as the average SAT score, median ACT score, average cost and admission rate for the specific university. In addition, we have a multi-bar chart which shows the comparison of the number of male and female students at the university. Analyzing the gender ratios at educational institutions is an important factor that determines the college selection for students. We have a stacked bar chart that shows the total expenditure for the university, the stack values show the tuition cost and the expenditure at the university. As the user selects the bars in the best fit university chart, the other bar charts update accordingly to reflect the metrics for the selected universities. Reviewing such metrics in a comparative manner could be quite useful to the curious high schooler trying to compare different universities of interest. 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/compare_unis.gif?raw=true"/>
 </p>
 
+We have a section that gives the university metrics for the best fit university to give an overall idea about the university. 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/about_best_uni.png?raw=true"/>
 </p>
 
+Explore Universities 
+The Explore Universities is a section which allows the users to get a deeper understanding of the universities. A specific university can be selected from a dropdown of the complete list of available universities. On selecting a specific university, the first section shows a detailed view of several parameters such as - admission rate, average SAT score, cost of attendance, expenditure, median earnings and others to give the student a better idea about the selected university.
+
+The visualizations in this section include a bar chart that shows the top 10 degrees by proportion awarded at the institution showing what kind of degrees are awarded the most at a particular institute. This is useful to users who want to explore universities that have specializations in certain domains. We also show a pie chart displaying the percentages of men and women at the university. This is followed by a bar chart showing the distribution of races at the selected university. 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/explore_uni.gif?raw=true"/>
 </p>
