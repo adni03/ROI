@@ -131,7 +131,7 @@ The Explore Universities is a section which allows the users to get a deeper und
 
 The visualizations in this section include a bar chart that shows the top 10 degrees by proportion awarded at the institution showing what kind of degrees are awarded the most at a particular institute. This is useful to users who want to explore universities that have specializations in certain domains. We also show a pie chart displaying the percentages of men and women at the university. This is followed by a bar chart showing the distribution of races at the selected university. The intuition behind using bar charts is that they are the simplest and most easily interpretable forms of visualization. When looking at the proportions of degrees or the race distribution, the user gets a clear picture of the bird’s eye view without much effort or unraveling.
 
-<img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true" width="425"/> <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true" width="425"/>
+<img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true" width="300"/> <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true" width="600"/>
 
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/race.png?raw=true"/>
