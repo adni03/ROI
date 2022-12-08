@@ -95,7 +95,7 @@ The output of SHAP is a matrix of numbers that has the same dimensions as the in
 ## Results
 The Application has three sections- best fit university recommendations based on user input for certain features, exploring different universities and analyzing the return on investment for universities. The application has been separated into these sections to allow for the users to have an immersive experience for each topic of interest. 
 
-University Matchmaker 
+### University Matchmaker 
 The University Matchmaker has a section to take input from the user - SAT Score, ACT Score, Funding Model, Region and Tuition Cost to make recommendations based on the user’s choices. The Funding Model and Region allow for multiple selections to take into consideration the varied choice of every student. 
 
 <p align="center">
@@ -110,35 +110,31 @@ Once the user enters the parameters of interest and clicks on the button, the re
 </p>
 
 This visualization is followed by a bar chart showing the best fit scores for the recommended universities in a descending order focussing on the ones which are of best interest to the student based on their selections. Hovering over each of the bars gives a glimpse of the important details such as the average SAT score, median ACT score, average cost and admission rate for the specific university. In addition, we have a multi-bar chart which shows the comparison of the number of male and female students at the university. Analyzing the gender ratios at educational institutions is an important factor that determines the college selection for students. We have a stacked bar chart that shows the total expenditure for the university, the stack values show the tuition cost and the expenditure at the university. As the user selects the bars in the best fit university chart, the other bar charts update accordingly to reflect the metrics for the selected universities. Reviewing such metrics in a comparative manner could be quite useful to the curious high schooler trying to compare different universities of interest. 
+
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/compare_unis.gif?raw=true"/>
 </p>
 
 We have a section that gives the university metrics for the best fit university to give an overall idea about the university. 
+
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/about_best_uni.png?raw=true"/>
 </p>
 
-Explore Universities 
+### Explore Universities 
+
+<p align="center">
+  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/explore_uni.gif?raw=true"/>
+</p>
 
 The Explore Universities is a section which allows the users to get a deeper understanding of the universities. A specific university can be selected from a dropdown of the complete list of available universities. On selecting a specific university, the first section shows a detailed view of several parameters such as - admission rate, average SAT score, cost of attendance, expenditure, median earnings and others to give the student a better idea about the selected university.
 
 The visualizations in this section include a bar chart that shows the top 10 degrees by proportion awarded at the institution showing what kind of degrees are awarded the most at a particular institute. This is useful to users who want to explore universities that have specializations in certain domains. We also show a pie chart displaying the percentages of men and women at the university. This is followed by a bar chart showing the distribution of races at the selected university. The intuition behind using bar charts is that they are the simplest and most easily interpretable forms of visualization. When looking at the proportions of degrees or the race distribution, the user gets a clear picture of the bird’s eye view without much effort or unraveling.
 
+<img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true"/> <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true"/>
+
 <p align="center">
   <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/race.png?raw=true"/>
-</p>
-
-<p align="center">
-  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/gender.png?raw=true"/>
-</p>
-
-<p align="center">
-  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/degree.png?raw=true"/>
-</p>
-
-<p align="center">
-  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/explore_uni.gif?raw=true"/>
 </p>
 
 <p align="center">
