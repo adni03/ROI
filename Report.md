@@ -94,7 +94,9 @@ The output of SHAP is a matrix of numbers that has the same dimensions as the in
 
 ## Results
 
-![Recommendations Dashboard](./pics/rec_dashboard.gif)
+<p align="center">
+  <img src="https://github.com/CMU-IDS-Fall-2022/final-project-roi/blob/main/pics/rec_dashboard.gif?raw=true"/>
+</p>
 
 ## Discussion
 The process of applying to universities is a laborious process that involves multiple time consuming steps of which the first is shortlisting colleges. Students and their parents have to carefully consider a variety of factors such as university ranking, location, tuition cost, financial aid, campus life, safety, etc. while looking for universities. This task is a large undertaking considering the number of colleges in the United States. With our project, we aimed to decrease the effort required to shortlist institutions by providing personalized recommendations, university level and demographic information, and a comprehensive analysis of the factors that a student should consider to maximize their return on investment.
