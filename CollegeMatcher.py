@@ -128,7 +128,7 @@ if add_selectbox == 'University Recommender':
 
     values = st.slider(
         'Select a range for tuition',
-        2000, 100000, (5000, 55000))
+        2000, 60000, (5000, 35000))
 
     # When clicked...
     if st.button('Find a Match!'):
