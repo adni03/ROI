@@ -9,6 +9,8 @@
 * **Video link**: [Video](https://www.youtube.com/watch?v=57Zp_kgilxs)
 * **Final report**: [Report](Report.md)
 
+----
+
 ## University Matcher
 
 <p align="center">
