@@ -6,7 +6,7 @@
   * abytha@andrew.cmu.edu
   * bredmond@andrew.cmu.edu
   * dulam@andrew.cmu.edu
-* **Video link**: TODO
+* **Video link**: [Video](https://www.youtube.com/watch?v=57Zp_kgilxs)
 * **Final report**: [Report](Report.md)
 
 ## University Matcher
