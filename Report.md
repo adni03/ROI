@@ -79,6 +79,7 @@ Intuitively, the higher the score, the better chance a student has to get accept
 Where, 
 - `n`: top-n universities
 - `d`: distance calculated in the above section
+- `i`: i-th university
 
 We order the universities on this score and present it to the user in the dashboard in the form of a table and a barplot showing the score.
 
