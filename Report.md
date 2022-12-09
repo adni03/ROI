@@ -2,7 +2,7 @@
 
 **Project URL**: https://cmu-ids-fall-2022-final-project-roi-collegematcher-ngipmw.streamlit.app/
 
-**Video URL**: TODO
+**Video URL**: https://www.youtube.com/watch?v=57Zp_kgilxs
 
  ----
 
