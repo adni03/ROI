@@ -1,6 +1,6 @@
 sklearn
 pandas
-numpy
+numpy==1.23.1
 vega_datasets
 shap
 streamlit-shap
